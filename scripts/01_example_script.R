@@ -10,7 +10,7 @@ rm(list=ls())
 cat("\014")
 local({r <- getOption("repos"); r["CRAN"] <- "http://cran.r-project.org"; options(repos=r)}) #set repo
 
-
+# modificacion 2
 
 # Load Packages -----------------------------------------------------------
 pkg<-list("dplyr","here")
