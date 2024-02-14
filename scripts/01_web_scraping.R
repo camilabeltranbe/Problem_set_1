@@ -7,8 +7,13 @@
 rm(list = ls()) #se borra la memoria
 require(pacman) 
 
-p_load(tidyverse, # contiene las librerias ggplot, dplyr...
-       rvest) # web-scraping
+p_load(rio, # import/export data
+       tidyverse, # tidy-data (ggplot y Tidyverse
+       skimr, # summary data
+       visdat, ## visualizing missing data
+       corrplot, ## Correlation Plots 
+       stargazer, # tables/output to TEX.
+      rvest) ## web-scraping
 
 #### 2. Fijar el directorio ----
 
@@ -21,7 +26,7 @@ wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1"
 setwd(paste0(wd,"/stores")) #se establace la ruta para guardar los resultados
 
 
-#### 3. Importar base de datos ----
+#### 3. Importar base de datos (web-scraping) ----
 
 ## URL de las 10 paginas
 url <- paste0("https://ignaciomsarmiento.github.io/GEIH2018_sample/pages/geih_page_",1:10,".html") #crea una lista de todas las URL
@@ -39,3 +44,25 @@ for (i in 1:length(url)){ #hace un loop para leer cada una de las url (data chun
 
 rm(list = (c("tabla","my_html","i","url","wd"))) #se borran los elementos que no quiero guardar
 save.image("data_GEIH.RData") #guardar los datos en .RData para que cargarlos sea mas sencillo 
+
+
+#### 4. Inspeccion de los datos y manejo de missing
+
+## Cambio de formato a Tibble   
+data_tibble <- as_tibble(data) 
+head(data_tibble)
+
+## Primer vistazo 
+skim(data_tibble) %>% 
+       head()
+
+## Missing 
+
+data_tibble_miss <- skim(data_tibble) %>% 
+       select(skim_variable, n_missing)
+
+Nobs= nrow(db) 
+Nobs
+
+db_miss<- db_miss %>% mutate(p_missing= n_missing/Nobs)
+head(db_miss)
