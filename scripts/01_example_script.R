@@ -3,6 +3,7 @@
 # author: Ignacio Sarmiento-Barbieri
 ##########################################################
 
+#Modificacion 1
 
 #Separate each section with labels
 # Clean the workspace -----------------------------------------------------
@@ -27,3 +28,5 @@ dta<-read.table(here("stores","US90.txt"), sep="", header=TRUE)
 # plot data ---------------------------------------------------------------
 
 plot(dta$gdpgr, dta$gdpcapgr, pch="*")
+
+#prueba 
