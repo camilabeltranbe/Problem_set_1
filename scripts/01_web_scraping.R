@@ -46,7 +46,7 @@ rm(list = (c("tabla","my_html","i","url","wd"))) #se borran los elementos que no
 save.image("data_GEIH.RData") #guardar los datos en .RData para que cargarlos sea mas sencillo 
 
 
-#### 4. Inspeccion de los datos y manejo de missing
+#### 4. Inspeccion de los datos y manejo de missing ----
 
 ## Cambio de formato a Tibble   
 data_tibble <- as_tibble(data) 
@@ -56,13 +56,51 @@ head(data_tibble)
 skim(data_tibble) %>% 
        head()
 
+## Seleccion de variables con las cuales vamos a trabjar -(si no sirve, hacer con dataframe)
+data_tibble<- data_tibble %>% 
+       select(directorio, secuencia_p, orden, estrato1, sex, age, ocu, oficio, orden, totalHoursWorked,
+                    dsi, ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
+                    ingtotes,ingtotob, y_salary_m, y_total_m)
+
+
 ## Missing 
 
 data_tibble_miss <- skim(data_tibble) %>% 
        select(skim_variable, n_missing)
 
-Nobs= nrow(db) 
+Nobs= nrow(data_tibble) 
 Nobs
 
-db_miss<- db_miss %>% mutate(p_missing= n_missing/Nobs)
+data_miss<- data_miss %>% 
+       mutate(p_missing= n_missing/Nobs)
 head(db_miss)
+
+vis_miss(data_tibble)
+
+
+#### 5. Estadisticas descriptivas ----
+
+## Pasar los datos a dataframe
+data_frame <- as_tibble(data_tibble)
+
+des_vars= c("var_1", "var_2", "age")
+stargazer(df[des_vars], type="text")
+
+#### 6. Estimacion del perfil edad-salarios
+
+## box_plot: edad vs salario
+box_plot <- ggplot(data=data_frame , mapping = aes(as.factor(edad) , salario)) + 
+            geom_boxplot() 
+box_plot
+
+## add another geometry 1
+box_plot <- box_plot +
+            geom_point(aes(colour=as.factor(sex))) +
+            scale_color_manual(values = c("0"="red" , "1"="blue") , label = c("0"="Hombre" , "1"="Mujer") , name = "Sexo")
+box_plot
+
+## add another geometry 2
+box_plot <- box_plot +
+            geom_point(aes(colour=as.factor(ocupacion))) +
+            scale_color_manual(values = c("0"="red" , "1"="blue") , label = c("0"="Hombre" , "1"="Mujer") , name = "Sexo")
+box_plot
