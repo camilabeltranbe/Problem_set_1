@@ -13,15 +13,20 @@ p_load(rio, # import/export data
        visdat, ## visualizing missing data
        corrplot, ## Correlation Plots 
        stargazer, # tables/output to TEX.
-      rvest) ## web-scraping
+      rvest,## web-scraping
+      writexl) ## Exportar Excel
 
 #### 2. Fijar el directorio ----
 
 ## Camila
 # wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1" #cambiar esta ruta por el directorio de cada uno 
 
-## Juan 
-wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1"
+## Juan 1
+# wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1"
+
+## Juan 2
+wd <- "C:/Users/Juan/Documents/Problem_set_1"
+
   
 setwd(paste0(wd,"/stores")) #se establace la ruta para guardar los resultados
 
@@ -44,6 +49,8 @@ for (i in 1:length(url)){ #hace un loop para leer cada una de las url (data chun
 
 rm(list = (c("tabla","my_html","i","url","wd"))) #se borran los elementos que no quiero guardar
 save.image("data_GEIH.RData") #guardar los datos en .RData para que cargarlos sea mas sencillo 
+
+write_xlsx(data, "data_GEIH.xlsx")
 
 
 #### 4. Inspeccion de los datos y manejo de missing ----
