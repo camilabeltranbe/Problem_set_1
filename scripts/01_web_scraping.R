@@ -27,6 +27,7 @@ p_load(rio, # import/export data
 ## Juan 2
 wd <- "C:/Users/Juan/Documents/Problem_set_1"
 
+setwd("/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1/stores")
   
 setwd(paste0(wd,"/stores")) #se establace la ruta para guardar los resultados
 
@@ -57,7 +58,7 @@ write_xlsx(data, "data_GEIH.xlsx")
 
 ## Cambio de formato a Tibble   
 data_tibble <- as_tibble(data) 
-head(data_tibble)
+view(head(data_tibble))
 
 ## Primer vistazo 
 skim(data_tibble) %>% 
@@ -69,6 +70,7 @@ data_tibble<- data_tibble %>%
                     dsi, ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
                     ingtotes,ingtotob, y_salary_m, y_total_m)
 
+view(head(data_tibble))
 
 ## Missing 
 
@@ -78,9 +80,9 @@ data_tibble_miss <- skim(data_tibble) %>%
 Nobs= nrow(data_tibble) 
 Nobs
 
-data_miss<- data_miss %>% 
+data_miss<- data_tibble_miss %>% 
        mutate(p_missing= n_missing/Nobs)
-head(db_miss)
+view(head(data_miss))
 
 vis_miss(data_tibble)
 
@@ -96,7 +98,7 @@ stargazer(df[des_vars], type="text")
 #### 6. Estimacion del perfil edad-salarios
 
 ## box_plot: edad vs salario
-box_plot <- ggplot(data=data_frame , mapping = aes(as.factor(edad) , salario)) + 
+box_plot <- ggplot(data=data_frame , mapping = aes(as.factor(age) , y_salary_m)) + 
             geom_boxplot() 
 box_plot
 
@@ -108,6 +110,6 @@ box_plot
 
 ## add another geometry 2
 box_plot <- box_plot +
-            geom_point(aes(colour=as.factor(ocupacion))) +
-            scale_color_manual(values = c("0"="red" , "1"="blue") , label = c("0"="Hombre" , "1"="Mujer") , name = "Sexo")
+            geom_point(aes(colour=as.factor(ocu))) +
+            scale_color_manual(values = c("0"="purple" , "1"="green") , label = c("0"="Desempleado" , "1"="Empleado") , name = "Sexo")
 box_plot
