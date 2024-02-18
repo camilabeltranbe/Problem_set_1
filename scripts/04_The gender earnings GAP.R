@@ -5,6 +5,11 @@
 rm(list = ls()) #se borra la memoria
 require(pacman) 
 
+<<<<<<< HEAD
+=======
+#prueba camila
+
+>>>>>>> c13d3c69f36fb0cc5d351f630a329e8aed6b6f6b
 p_load(rio, # import/export data
        tidyverse, # tidy-data (ggplot y Tidyverse
        skimr, # summary data
@@ -86,8 +91,13 @@ earnings_gap <- lm(log_w ~ female, data = data_tibble)
 stargazer(earnings_gap, type = "text")#quitar el "text" si se quiere en LATEX
 
 ####################### b) Equal Pay for Equal Work? ######################
+<<<<<<< HEAD
 # i) usando FWL
 equal_pay <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio_factor, data= data_tibble)
+=======
+
+equal_pay <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio, data= data_tibble)
+>>>>>>> c13d3c69f36fb0cc5d351f630a329e8aed6b6f6b
 
 #Donde:
 #maxEducLevel	= max. education level attained
@@ -100,6 +110,7 @@ stargazer(equal_pay, type = "text")
 
 #Resultados para comparación
 stargazer(earnings_gap,equal_pay,type="text",digits=4)
+<<<<<<< HEAD
 
 # ii) FWL- Bootstrap
 p_load("boot")
@@ -135,3 +146,5 @@ resumen_stargazer <- data.frame(
   SE = err_est_bootstrap
 )
 
+=======
+>>>>>>> c13d3c69f36fb0cc5d351f630a329e8aed6b6f6b
