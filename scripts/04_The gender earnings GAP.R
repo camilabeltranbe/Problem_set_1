@@ -5,6 +5,8 @@
 rm(list = ls()) #se borra la memoria
 require(pacman) 
 
+#prueba camila
+
 p_load(rio, # import/export data
        tidyverse, # tidy-data (ggplot y Tidyverse
        skimr, # summary data
