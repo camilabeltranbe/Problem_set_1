@@ -5,11 +5,6 @@
 rm(list = ls()) #se borra la memoria
 require(pacman) 
 
-<<<<<<< HEAD
-=======
-#prueba camila
-
->>>>>>> c13d3c69f36fb0cc5d351f630a329e8aed6b6f6b
 p_load(rio, # import/export data
        tidyverse, # tidy-data (ggplot y Tidyverse
        skimr, # summary data
@@ -20,19 +15,16 @@ p_load(rio, # import/export data
        readxl, ## Importar Excel
        writexl) ## Exportar Excel
 
-
-wd <-"C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1"
-  #cambiar esta ruta por el directorio de cada uno 
-data <- read_excel("C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1/stores/data_GEIH.xlsx")
-View(data)
+#cambiar esta ruta por el directorio de cada uno 
+wd <-"C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1" 
+#cargar la base de datos a través de image 
+load("C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1/stores/data_GEIH.RData")
 
 data_tibble <- as_tibble(data) 
 view(head(data_tibble))
 
-## Primer vistazo 
-skim(data_tibble) %>% 
-  head()
-
+########## Selección de variables e imputación de Missing values ##########
+{
 ## Seleccion de variables con las cuales vamos a trabjar -(si no sirve, hacer con dataframe)
 data_tibble<- data_tibble %>% 
   select(directorio, secuencia_p, orden, estrato1, sex, age, ocu, oficio, orden, totalHoursWorked,
@@ -82,22 +74,19 @@ data_tibble$log_w=log(data_tibble$sal_imputado)
 todos_numeros <- all(is.numeric(data_tibble$log_w))
 print(todos_numeros)
 rm(todos_numeros)
-
+}
 ####################### a) Regresión ######################################
-
+{
 earnings_gap <- lm(log_w ~ female, data = data_tibble)
 
 # Mostrar resultados con stargazer
 stargazer(earnings_gap, type = "text")#quitar el "text" si se quiere en LATEX
-
+}
 ####################### b) Equal Pay for Equal Work? ######################
-<<<<<<< HEAD
+{
 # i) usando FWL
+data_tibble<- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
 equal_pay <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio_factor, data= data_tibble)
-=======
-
-equal_pay <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio, data= data_tibble)
->>>>>>> c13d3c69f36fb0cc5d351f630a329e8aed6b6f6b
 
 #Donde:
 #maxEducLevel	= max. education level attained
@@ -110,41 +99,48 @@ stargazer(equal_pay, type = "text")
 
 #Resultados para comparación
 stargazer(earnings_gap,equal_pay,type="text",digits=4)
-<<<<<<< HEAD
 
 # ii) FWL- Bootstrap
 p_load("boot")
 
-data_tibble<- data_tibble %>% mutate (oficio_factor= as.factor(oficio)) 
-
-
-
-
-
 ###########Opcion 1 - sin control ofico #############
 # Función para realizar bootstrap
-bootstrap_func <- function(data, indices) {
+bootstrap_func <- function(data_tibble, indices) {
   sample_data <- data[indices, ]
-  modelo <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual , data = sample_data)
+  modelo <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio_factor , data = sample_data)
   return(coef(modelo))
 }
 
+# funion de ignacio
+female_fn<-function(data,index){
+  coef(lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio_factor ,data_tibble, subset=index))[2] #returns the second coefficient of the linear regression
+}
+#Verifiquemos que la función... funciona!
+female_fn(data_tibble,1:nrow(data_tibble))
 
-# Realizar bootstrap
-bootstrap_output <- boot(data = data_tibble, statistic = bootstrap_func, R = 100)
-print(bootstrap_output)
+set.seed(123)
+#call the boot function
+boot_r <- boot(data_tibble, female_fn, R = 10)
+boot_r
+}
+####### c) plot age-wage profile / estimate the implied “peak ages”########
+{
+#Creamos variable de edad^2
+data_tibble$age2 <- (data_tibble$age)^2
 
-int_conf <- boot.ci(bootstrap_output, type = "bca")
+#Realizamos el age-wage profile para mujeres
+age_wage_female <- lm(log_w ~ age + age2, data = data_tibble, subset= female==1) 
+stargazer(age_wage_female, type = "text")
 
-# Extraer coeficientes y errores estándar
-coef_bootstrap <- colMeans(bootstrap_output$t)
-err_est_bootstrap <- apply(bootstrap_output$t, 2, sd)
+#Realizamos el age-wage profile para hombre
+age_wage_male <- lm(log_w ~ age + age2, data = data_tibble, subset= sex==1) 
+stargazer(age_wage_male, type = "text")
 
-# Crear un resumen para stargazer
-resumen_stargazer <- data.frame(
-  Coeficiente = coef_bootstrap,
-  SE = err_est_bootstrap
-)
 
-=======
->>>>>>> c13d3c69f36fb0cc5d351f630a329e8aed6b6f6b
+
+box_plot <- ggplot(data=data_frame , mapping = aes(as.factor(age) , log_w)) + 
+  geom_boxplot()+
+  geom_vline(xintercept = 50,
+             linetype = 2,
+             color = 1)
+}
