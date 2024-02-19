@@ -74,10 +74,7 @@ data_tibble$log_w=log(data_tibble$sal_imputado)
 
 #Verificar que no tenemos problemas con la transformación a log
 sum(is.nan(data_tibble$log_w))
-#todos_numeros <- all(is.numeric(data_tibble$log_w))
-#print(todos_numeros)
-#rm(todos_numeros)
-}
+
 ####################### a) Regresión ######################################
 {
 earnings_gap <- lm(log_w ~ female, data = data_tibble)
@@ -101,12 +98,13 @@ equal_pay_ols$coefficients[2] #extrae el coeficiente de interes
 
 # usando FWL
 res1 <- residuals(lm(log_w ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble)) 
-res2 <- residuals(lm(female ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble))
-equal_pay_fwl <- lm(res1 ~ res2)
+female <- residuals(lm(female ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble))
+equal_pay_fwl <- lm(res1 ~ female)
 coefficients(equal_pay_fwl)[2]
 
 # Mostrar resultados con stargazer
 stargazer(equal_pay_fwl,type = "text",omit = "Constant",dep.var.labels = "Ln(salario)",covariate.labels = "mujer")
+stargazer(equal_pay_fwl,earnings_gap,type = "text",dep.var.labels = c("Ln(salario) con controles","Ln(salario) sin controles"),covariate.labels = "mujer")
 
 # ii) FWL- Bootstrap
 
@@ -132,16 +130,30 @@ boot_r
 data_tibble$age2 <- (data_tibble$age)^2
 
 #Realizamos el age-wage profile para mujeres
-age_wage_female <- lm(log_w ~ age + age2, data = data_tibble, subset= female==1) 
-stargazer(age_wage_female, type = "text",omit = "Constant")
-
 # Crear una nueva base de datos solo con observaciones de mujeres
 female_data_tibble <- subset(data_tibble, sex == 0)
 
+female_fn<-function(data,index){
+ coef(lm(log_w ~ age + age2, data = female_data_tibble, subset= index))[1:3] #retorna el segundo coeficiente de la regresion
+}
+
+#Verifiquemos que la función... funciona!
+female_fn(female_data_tibble,1:nrow(female_data_tibble))
+
+#Se utiliza la funcion boot para estimar la regresion con bootstrap
+set.seed(5382)
+boot_r <- boot(female_data_tibble, female_fn, R = 10)
+boot_r$t0
+
 # Realiza predicciones con el modelo e intervalos de confianza
-female_data_tibble$predicted <- predict(age_wage_female, newdata = female_data_tibble, interval = "confidence", level = 0.95)[,"fit"]
-female_data_tibble$conf.low <- predict(age_wage_female, newdata = female_data_tibble, interval = "confidence", level = 0.95)[,"lwr"]
-female_data_tibble$conf.high <- predict(age_wage_female, newdata = female_data_tibble, interval = "confidence", level = 0.95)[,"upr"]
+female_data_tibble <- female_data_tibble[,c("age","log_w","age2")]
+female_data_tibble$predicted <- boot_r$t0[1] + boot_r$t0[2]*female_data_tibble$age + boot_r$t0[3]*female_data_tibble$age2
+female_data_tibble$conf.low <- unlist(boot.ci(boot_r, type = "norm", index = 1)[4])[2] +
+                               unlist(boot.ci(boot_r, type = "norm", index = 2)[4])[2]*female_data_tibble$age +
+                               unlist(boot.ci(boot_r, type = "norm", index = 3)[4])[2]*female_data_tibble$age2
+female_data_tibble$conf.high <- unlist(boot.ci(boot_r, type = "norm", index = 1)[4])[3] +
+                                unlist(boot.ci(boot_r, type = "norm", index = 2)[4])[3]*female_data_tibble$age + 
+                                unlist(boot.ci(boot_r, type = "norm", index = 3)[4])[3]*female_data_tibble$age2
 
 female_plot <- ggplot(female_data_tibble, aes(x = age, y = log_w)) +
                 geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
@@ -185,10 +197,12 @@ print(male_plot)
 # Edad maximizadora mujeres
 female_age_max <- -(age_wage_female$coefficients["age"])/(2*age_wage_female$coefficients["age2"])
 female_age_max # Resulta ser a los 44 años
+View(female_data_tibble[female_data_tibble$age==44,c("predicted","conf.low","conf.high")])
 
 # Edad maximizadora hombres
 male_age_max <- -(age_wage_male$coefficients["age"])/(2*age_wage_male$coefficients["age2"])
 male_age_max # Resulta ser a los 51 años
+View(male_data_tibble[male_data_tibble$age==51,c("predicted","conf.low","conf.high")])
 
 predicted_data <- rbind(female_data_tibble,male_data_tibble)
 predicted_data$sex <- factor(predicted_data$sex, levels = c(0, 1), labels = c("Mujeres", "Hombres"))
