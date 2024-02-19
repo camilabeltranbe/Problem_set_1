@@ -147,7 +147,7 @@ female_plot <- ggplot(female_data_tibble, aes(x = age, y = log_w)) +
                 geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
                 geom_line(aes(y = predicted, color = "Predicho"), size = 1) +  # Línea para valores predichos
                 geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = "Intervalo de Confianza"), 
-                            fill = "red", alpha = 0.3) +  # Intervalos de confianza
+                            fill = "blue", alpha = 0.3) +  # Intervalos de confianza
                 scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue"),name="") +  # Colores de puntos y líneas
                 labs(title = "Perfil edad-ingreso: mujeres",
                      x = "Edad",
@@ -173,7 +173,7 @@ male_plot <- ggplot(male_data_tibble, aes(x = age, y = log_w)) +
              geom_line(aes(y = predicted, color = "Predicho"), size = 1) +  # Línea para valores predichos
              geom_ribbon(aes(ymin = conf.low, ymax = conf.high, fill = "Intervalo de Confianza"), 
              fill = "red", alpha = 0.3) +  # Intervalos de confianza
-             scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue"),name="") +  # Colores de puntos y líneas
+             scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkred"),name="") +  # Colores de puntos y líneas
              labs(title = "Perfil edad-ingreso: hombres",
                x = "Edad",
                y = "Ln(salario)") +
