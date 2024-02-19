@@ -132,15 +132,48 @@ data_tibble$age2 <- (data_tibble$age)^2
 age_wage_female <- lm(log_w ~ age + age2, data = data_tibble, subset= female==1) 
 stargazer(age_wage_female, type = "text")
 
-#Realizamos el age-wage profile para hombre
+# Crear una nueva base de datos solo con observaciones de mujeres=0
+female_data_tibble <- subset(data_tibble, sex == 0)
+
+# Realiza predicciones con el modelo
+female_data_tibble$predicted <- predict(age_wage_female, newdata = female_data_tibble)
+
+ggplot(female_data_tibble, aes(x = age, y = log_w)) +
+  geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
+  geom_line(aes(y = predicted, color = "Predicho"), size = 1) +  # Línea para valores predichos
+  scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue")) +  # Colores de puntos y líneas
+  labs(title = "Age - Wage Profile : Mujeres",
+       x = "Edad",
+       y = "log_w") +
+  theme_minimal()
+
+
+#Realizamos el age-wage profile para hombres
 age_wage_male <- lm(log_w ~ age + age2, data = data_tibble, subset= sex==1) 
 stargazer(age_wage_male, type = "text")
+# Crear una nueva base de datos solo con observaciones de mujeres=0
+male_data_tibble <- subset(data_tibble, sex == 1)
+# Realiza predicciones con el modelo
+male_data_tibble$predicted <- predict(age_wage_male, newdata = male_data_tibble)
+
+ggplot(male_data_tibble, aes(x = age, y = log_w)) +
+  geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
+  geom_line(aes(y = predicted, color = "Predicho"), size = 1) +  # Línea para valores predichos
+  scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkred")) +  # Colores de puntos y líneas
+  labs(title = "Age - Wage Profile : Hombres",
+       x = "Edad",
+       y = "log_w") +
+  theme_minimal()
+
+# Edad maximizadora mujeres
+female_age_max <- -(age_wage_female$coefficients["age"])/(2*age_wage_female$coefficients["age2"])
+female_age_max # Resulta ser a los 43 años
+
+# Edad maximizadora mujeres
+male_age_max <- -(age_wage_male$coefficients["age"])/(2*age_wage_male$coefficients["age2"])
+male_age_max # Resulta ser a los 43 años
+
+######################### ME FALTA LOS INTERVALOS DE CONFIANZA QUE PIDEN :C ############
 
 
-
-box_plot <- ggplot(data=data_frame , mapping = aes(as.factor(age) , log_w)) + 
-  geom_boxplot()+
-  geom_vline(xintercept = 50,
-             linetype = 2,
-             color = 1)
 }
