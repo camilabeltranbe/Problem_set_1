@@ -16,7 +16,7 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
 
 #cambiar esta ruta por el directorio de cada uno 
 #ruta julian
-#wd <-"C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1"
+wd <-"C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/"
 #ruta camila
 wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1"
 #cargar la base de datos a través de image 
@@ -74,7 +74,7 @@ data_tibble$log_w=log(data_tibble$sal_imputado)
 
 #Verificar que no tenemos problemas con la transformación a log
 sum(is.nan(data_tibble$log_w))
-
+}
 ####################### a) Regresión ######################################
 {
 earnings_gap <- lm(log_w ~ female, data = data_tibble)
@@ -226,4 +226,25 @@ setwd(paste0(wd,"/Views"))
 ggsave("age_wage_profile_hombres.png", male_plot, width = 10, height = 6, units = "in")
 ggsave("age_wage_profile_mujeres.png", female_plot, width = 10, height = 6, units = "in")
 ggsave("age_wage_profile_gender.png", gender_plot, width = 10, height = 6, units = "in")
+
+
+#Solición propuesta 1
+#Creamos variable de edad^2
+data_tibble$age2 <- (data_tibble$age)^2
+# Ajustar el modelo de regresión lineal
+female_gap_reg <- lm(log_w ~ age + age2, data = data_tibble)
+view(female_gap_predicted)
+# Predecir valores usando el modelo
+female_gap_predicted <- predict(female_gap_reg)
+
+max_value <- max(female_gap_predicted)
+
+n_iterations <- 1000
+
+boot_max<-numeric(n_iterations)
+
+for(i in 1:n_iterations){data_tibble<-female_gap_predicted[sample(nrow(female_gap_predicted),replace=TRUE), ]
+boot_max[i]<-max(data_tibble$X)}  
+
+
 }
