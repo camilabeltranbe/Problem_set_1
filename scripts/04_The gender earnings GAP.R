@@ -246,5 +246,4 @@ boot_max<-numeric(n_iterations)
 for(i in 1:n_iterations){data_tibble<-female_gap_predicted[sample(nrow(female_gap_predicted),replace=TRUE), ]
 boot_max[i]<-max(data_tibble$X)}  
 
-
 }
