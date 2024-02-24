@@ -19,7 +19,9 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
 
 ifelse(getwd()=="/Users/camilabeltran",
        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
-       wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1")
+       ifelse(getwd()=="/User/OneDrive - Universidad de los andes",
+       wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1",
+       wd <- "C:/Users/Juan/Documents/Problem_set_1"))
 setwd(paste0(wd,"/stores"))
 #Cargar datos a partir de 0_1_web_scraping###
 load("data_GEIH.RData")
