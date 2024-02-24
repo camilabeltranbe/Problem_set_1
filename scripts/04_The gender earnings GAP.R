@@ -19,6 +19,9 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
 wd <-"C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/"
 #ruta camila
 wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1"
+#ruta Juan 2
+wd <- "C:/Users/Juan/Documents/Problem_set_1"
+
 #cargar la base de datos a través de image 
 setwd(paste0(wd,"/stores"))
 load("data_GEIH.RData")
@@ -74,6 +77,35 @@ data_tibble$log_w=log(data_tibble$sal_imputado)
 
 #Verificar que no tenemos problemas con la transformación a log
 sum(is.nan(data_tibble$log_w))
+}
+
+########## Estadisticas descriptivas ##########
+{
+# Salario medio por genero (datos brutos) 
+data_tibble %>% group_by(female) %>% summarise(median(y_salary_m, na.rm =TRUE))
+
+# Salario medio por genero (datos tratados) 
+mean_wage <- data_tibble %>% group_by(female) %>% summarise(median(sal_imputado))
+Dif_sex <- mean_wage[2,2]*100/mean_wage[1,2]
+
+# Histograma
+data_low <- data_tibble %>% 
+            filter(sal_imputado < 2000000) %>% 
+            mutate(sal_mill=sal_imputado/1000000)
+13012/32177
+
+# Histograma por genero
+  
+  ggplot(data_low, aes(x=sal_mill, group=as.factor(female), fill=as.factor(female))) +
+    geom_density(adjust=1.5, alpha=.2) +
+    labs(title = "Histograma de la brecha de género",
+         x = "Salario",
+         y = "Densidad") +
+    scale_fill_manual(name = "Género", labels = c("Hombre", "Mujer"), values=c("darkgreen","darkblue"))+
+    theme_minimal() +
+    theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
+
+  
 }
 ####################### a) Regresión ######################################
 {
