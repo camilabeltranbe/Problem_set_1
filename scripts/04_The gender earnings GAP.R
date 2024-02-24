@@ -33,17 +33,17 @@ data_tibble <- as_tibble(data)
 
 ########## Selección de variables e imputación de Missing values ##########
 {
-## Seleccion de variables con las cuales vamos a trabjar -(si no sirve, hacer con dataframe)
+## Seleccion de variables con las cuales vamos a trabjar 
 data_tibble<- data_tibble %>% 
   select(directorio, secuencia_p, orden, estrato1, sex, age, ocu, oficio, orden, totalHoursWorked,
          dsi, ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
          ingtotes,ingtotob, y_salary_m, y_total_m, hoursWorkUsual) 
 #view(head(data_tibble))
-# Se eliminaron 157 variables de la muestra inicial, dejando la nueva muestra con 21 variables.
+# Se eliminaron 157 variables de la muestra inicial, dejando la nueva muestra con 22 variables.
 
 ## Filto de observaciones
-# BORRAR: solo guia - "In this problem set, we will focus only on employed individuals older than eighteen (18) years old.
-# ¿Preguntar si el filtro está bien?
+# "In this problem set, we will focus only on employed individuals older than eighteen (18) years old.
+# 
 table(data$dominio) ## Solo se está trabajando con individuos de Bogota
 data_tibble <- data_tibble %>%
   filter(age>=18 & ## Mayores de edad
@@ -129,9 +129,8 @@ set.seed(5382)
 boot_r <- boot(data_tibble, female_fn, R = 1000)
 boot_r
 }
-
-####### c) plot age-wage profile / estimate the implied “peak ages”########
-
+######## c) plot age-wage profile / estimate the implied “peak ages"#######
+{
 #Creamos variable de edad^2
 data_tibble$age2 <- (data_tibble$age)^2
 
@@ -191,7 +190,6 @@ male_fn<-function(data,index){
   max_edad <- -(b1)/(2*b2)
   return(max_edad)
 }
-
 #Verifiquemos que la función... funciona!
 male_fn(male_data_tibble,1:nrow(male_data_tibble))
 
@@ -232,9 +230,7 @@ setwd(paste0(wd,"/Views"))
 ggsave("age_wage_profile_hombres.png", male_plot, width = 10, height = 6, units = "in")
 ggsave("age_wage_profile_mujeres.png", female_plot, width = 10, height = 6, units = "in")
 ggsave("age_wage_profile_gender.png", gender_plot, width = 10, height = 6, units = "in")
-
+}
 setwd(paste0(wd,"/Stores"))
 
-{
 save.image("gender_gap_earnings.R")
-}  
