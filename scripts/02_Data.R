@@ -2,7 +2,7 @@
 ########### Punto 2 -Problem set 1 ################
 #################################################
 
-
+{
 rm(list = ls()) #se borra la memoria
 library(pacman) 
 p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
@@ -27,6 +27,7 @@ load("data_GEIH.RData")
 ## Cambio de formato a Tibble   
 data_tibble <- as_tibble(data) 
 view(head(data_tibble))
+}
 ########## Selección de variables e imputación de Missing values ##########
 {
   ## Seleccion de variables con las cuales vamos a trabjar 
