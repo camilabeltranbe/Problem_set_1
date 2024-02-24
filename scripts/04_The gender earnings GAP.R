@@ -4,7 +4,6 @@
 
 rm(list = ls()) #se borra la memoria
 library(pacman) 
-
 p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        skimr, # summary data
        visdat, ## visualizing missing data
@@ -14,11 +13,17 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        writexl, # exportar Excel
        boot) ## bootstrapping
 
-#cambiar esta ruta por el directorio de cada uno 
-#ruta julian
-wd <-"C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/"
-#ruta camila
-wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1"
+#cambiar esta ruta por el directorio de cada uno
+ifelse(getwd()=="/Users/camilabeltran",
+        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
+        wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1")
+
+#IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
+setwd(paste0(wd,"/stores"))
+load("gender_gap_earnings.R")
+
+#A continuación, encontrarán el código realizado para llegar a los resultados que se encuentran cargados en la imagen:
+
 #cargar la base de datos a través de image 
 setwd(paste0(wd,"/stores"))
 load("data_GEIH.RData")
@@ -87,20 +92,21 @@ stargazer(earnings_gap, type = "text") #quitar el "text" si se quiere en LATEX
 ####################### b) Equal Pay for Equal Work? ######################
 {
 #poner la variable oficio como factor porque es categorica
-data_tibble<- data_tibble %>% mutate (oficio_factor= as.factor(oficio)) 
+data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
+data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))
 
 # usando OLS  
-equal_pay_ols <- lm(log_w ~ female + age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble)
+equal_pay_ols <- lm(log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble)
 equal_pay_ols$coefficients[2] #extrae el coeficiente de interes
 #Donde:
-#maxEducLevel	= max. education level attained
+#maxEducLevel_factor	= max. education level attained
 #hoursWorkUsual = usual weekly hours worked - principal occ.
 #oficio
 #age=edad
 
 # usando FWL
-res1 <- residuals(lm(log_w ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble)) 
-female <- residuals(lm(female ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble))
+res1 <- residuals(lm(log_w ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble)) 
+female <- residuals(lm(female ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble))
 equal_pay_fwl <- lm(res1 ~ female)
 coefficients(equal_pay_fwl)[2]
 
@@ -111,8 +117,8 @@ stargazer(equal_pay_fwl,earnings_gap,type = "text",dep.var.labels = c("Ln(salari
 # ii) FWL- Bootstrap
 # funcion para realizar bootstrap
 female_fn<-function(data,index){
-  res1 <- residuals(lm(log_w ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble, subset=index)) 
-  res2 <- residuals(lm(female ~ age + maxEducLevel + hoursWorkUsual + oficio_factor, data = data_tibble, subset=index))
+  res1 <- residuals(lm(log_w ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble, subset=index)) 
+  res2 <- residuals(lm(female ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble, subset=index))
   coef(lm(res1 ~ res2, subset=index))[2] #retorna el segundo coeficiente de la regresion
 }
 #Verifiquemos que la función... funciona!
@@ -160,13 +166,12 @@ quantile(boot_rf$V1,0.975) #percentil 97.5 (44.71811)
 
 female_plot <- ggplot(female_data_tibble, aes(x = age, y = log_w)) +
                 geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
-                geom_line(aes(y = predicted, color = "Predicho"), size = 1) +  # Línea para valores predichos
+                geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
                 scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue"),name="") +  # Colores de puntos y líneas
                 labs(title = "Perfil edad-ingreso: mujeres",
                      x = "Edad",
                      y = "Ln(salario)") +
-                theme_minimal() +
-                theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
+                theme_minimal()
 print(female_plot)
 
 #Realizamos el age-wage profile para hombres
@@ -200,13 +205,12 @@ quantile(boot_rm$V1,0.975) #percentil 97.5 (53.45359)
 
 male_plot <- ggplot(male_data_tibble, aes(x = age, y = log_w)) +
               geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
-              geom_line(aes(y = predicted, color = "Predicho"), size = 1) +  # Línea para valores predichos
+              geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
               scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkred"),name="") +  # Colores de puntos y líneas
               labs(title = "Perfil edad-ingreso: hombres",
                    x = "Edad",
                    y = "Ln(salario)") +
-              theme_minimal() +
-              theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
+              theme_minimal()
 print(male_plot)
 
 #plot de perfil edad - ingreso por sexo
@@ -221,7 +225,6 @@ gender_plot <- ggplot(predicted_data, aes(x = age, y = predicted, color = sex)) 
                      y = "Ingreso") +
                 theme_minimal() +
                 scale_color_manual(values = c("Mujeres" = "darkblue", "Hombres" = "darkred"),name="") + # Cambiar colores de las líneas
-                theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
 print(gender_plot)
 
 #Guardar los graficos
@@ -229,3 +232,9 @@ setwd(paste0(wd,"/Views"))
 ggsave("age_wage_profile_hombres.png", male_plot, width = 10, height = 6, units = "in")
 ggsave("age_wage_profile_mujeres.png", female_plot, width = 10, height = 6, units = "in")
 ggsave("age_wage_profile_gender.png", gender_plot, width = 10, height = 6, units = "in")
+
+setwd(paste0(wd,"/Stores"))
+
+{
+save.image("gender_gap_earnings.R")
+}  
