@@ -161,10 +161,38 @@ box_plot
 
 
 ### Pruebas
-
+{
 # max educación 
 
 Matrix_summary <- summary(as.factor(data_tibble$maxEducLevel))
 dotchart(Matrix_summary)
 
+
+# Salario medio por genero (datos brutos) 
+data_tibble$female <- 1 - data_tibble$sex
+data_tibble %>% 
+  group_by(female) %>% 
+  summarise(median(y_salary_m, na.rm =TRUE))
+
+# Salario medio por genero (datos tratados) 
+mean_wage <- data_tibble %>% group_by(female) %>% summarise(median(sal_imputado))
+Dif_sex <- mean_wage[2,2]*100/mean_wage[1,2]
+
+# Histograma
+data_low <- data_tibble %>% 
+  filter(sal_imputado < 2000000) %>% 
+  mutate(sal_mill=sal_imputado/1000000)
+13012/32177
+
+# Histograma por genero
+
+ggplot(data_low, aes(x=sal_mill, group=as.factor(female), fill=as.factor(female))) +
+  geom_density(adjust=1.5, alpha=.2) +
+  labs(title = "Histograma de la brecha de género",
+       x = "Salario",
+       y = "Densidad") +
+  scale_fill_manual(name = "Género", labels = c("Hombre", "Mujer"), values=c("darkgreen","darkblue"))+
+  theme_minimal() +
+  theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
+}
 
