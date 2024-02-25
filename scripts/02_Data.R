@@ -56,7 +56,7 @@ view(head(data_tibble))
 
 {
   ## c. Missing values
-  
+  table(data_tibble$regSalud)
   ## Grafica general
   png("grafica_missing")
   vis_miss(data_tibble)
@@ -104,15 +104,25 @@ view(head(data_tibble))
            Ln_wage_sal = log(y_salary_m))
 }
 
+## Renombrar variables continuas 
+{
+  data_est_des <- data_tibble %>% 
+    rename(Edad = age) %>% 
+    rename(Horas_Trabajadas=totalHoursWorked) %>% 
+    rename(Salario_mensual = sal_imputado)
+  
+
+}
 
 ####################### Estadisticas descriptivas ###########################
 {
 ## Pasar los datos a dataframe
-data_frame <- as.data.frame(data_tibble)
+
+data_est_des <- as.data.frame(data_est_des)
 
 # Borrar: Poner variables mas importantes
-des_vars= c("totalHoursWorked")
-stargazer(data_frame[des_vars], type = "text", title="Estadísticas Descriptivas", digits=1, out="Tabla_Est_descriptivas.txt")
+des_vars= c("Edad", "Horas_Trabajadas", "Salario_mensual")
+stargazer(data_est_des[des_vars], type = "text", title="Estadísticas Descriptivas", digits=1, out="Tabla_Est_descriptivas.txt")
 
 
 #### 6. Estimacion del perfil edad-salarios
