@@ -36,10 +36,10 @@ view(head(data_tibble))
   ## Seleccion de variables con las cuales vamos a trabjar 
   data_tibble<- data_tibble %>% 
     select(directorio, secuencia_p, orden, estrato1, sex, age, ocu, oficio, orden, totalHoursWorked,
-           dsi, ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
+           ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
            ingtotes,ingtotob, y_salary_m, y_total_m, hoursWorkUsual) 
   #view(head(data_tibble))
-  # Se eliminaron 157 variables de la muestra inicial, dejando la nueva muestra con 22 variables.
+  # Se eliminaron 157 variables de la muestra inicial, dejando la nueva muestra con 21 variables.
 }
 
 {
@@ -56,6 +56,12 @@ view(head(data_tibble))
 
 {
   ## c. Missing values
+  
+  ## Grafica general
+  vis_miss(data_tibble)
+  
+  ## Variable de salario 
+  
   sum(is.na(data_tibble$y_salary_m))
   sum(is.na(data_tibble$y_total_m))
   
@@ -90,10 +96,14 @@ view(head(data_tibble))
   #Ahora bien,queremos crear la variable Female, para ello tomaremos la variable sex 
   #que se encuentra en la encuesta
   data_tibble$female <- 1 - data_tibble$sex
+  # Nuevas variables esta sección
+  data_tibble <- data_tibble %>%
+    mutate(Ln_wage_tot = log(y_total_m),
+           age2 = age^2,
+           Ln_wage_sal = log(y_salary_m))
 }
 
 
-any(is.na(data_tibble$regSalud)) #observemos si existen Missing values en la variable salario
 ####################### Estadisticas descriptivas ###########################
 {
 ## Pasar los datos a dataframe
