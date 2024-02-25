@@ -56,13 +56,34 @@ view(head(data_tibble))
 
 {
   ## c. Missing values
-  table(data_tibble$regSalud)
-  ## Grafica general
-  png("grafica_missing")
-  vis_miss(data_tibble)
-  dev.off()
-  ## Variable de salario 
+  # Se renombraron las variables más relevantes para presentar la gráfica de missing
+  data_table_missing <- data_tibble %>% 
+    rename(ID_Hogar = directorio) %>% 
+    rename(Genero = sex) %>% 
+    rename(Estrato = estrato1) %>% 
+    rename(Edad = age) %>% 
+    rename(Empleado = ocu) %>% 
+    rename(Hor_trabajadas = totalHoursWorked) %>% 
+    rename(Informal = informal) %>% 
+    rename(Tam_Firma = sizeFirm) %>% 
+    rename(Nivel_Educ = maxEducLevel) %>% 
+    rename(Ing_tot = ingtot) %>% 
+    rename(Salario_m =y_salary_m)
   
+  data_table_missing <- data_table_missing %>% 
+    select(ID_Hogar, Genero, Estrato, Edad, Empleado, Hor_trabajadas, 
+           Informal, Tam_Firma, Nivel_Educ, Ing_tot, Salario_m)
+  
+  ## Grafica general
+  png("grafica_missing") # Formato grafica
+  vis_miss(data_table_missing) # tabla missing
+  dev.off() # Cierra la grafica
+  #vis_dat(data_table_missing) # Opcion 2
+  #vis_miss(data_table_missing ,sort_miss = TRUE, cluster = TRUE) # Opcion 3
+}
+
+{  
+  ## d. Imputacion de Variable salario 
   sum(is.na(data_tibble$y_salary_m))
   sum(is.na(data_tibble$y_total_m))
   
@@ -99,7 +120,7 @@ view(head(data_tibble))
 }
 
 {
-## d. Nuevas variables
+## e. Nuevas variables
   #Ahora bien,queremos crear la variable Female, para ello tomaremos la variable sex 
   #que se encuentra en la encuesta
   data_tibble$female <- 1 - data_tibble$sex
@@ -110,14 +131,12 @@ view(head(data_tibble))
            Ln_wage_sal = log(y_salary_m))
 }
 
-## Renombrar variables continuas 
 {
+  ## f. Renombrar variables continuas 
   data_est_des <- data_tibble %>% 
     rename(Edad = age) %>% 
     rename(Horas_Trabajadas=totalHoursWorked) %>% 
     rename(Salario_mensual = sal_imputado)
-  
-
 }
 
 ####################### Estadisticas descriptivas ###########################
