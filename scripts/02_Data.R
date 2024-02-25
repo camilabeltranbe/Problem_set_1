@@ -90,6 +90,12 @@ view(head(data_tibble))
   
   #Verificar que no tenemos problemas con la transformación a log
   sum(is.nan(data_tibble$log_w))
+  
+  ## Eliminar el missing de Educacion maxima
+  any(is.na(data_tibble$maxEducLevel)) #observemos si existen Missing values en la variable salario
+  data_tibble <- data_tibble %>%
+    filter(!is.na(maxEducLevel))
+  
 }
 
 {
@@ -152,3 +158,13 @@ box_plot <- box_plot +
 box_plot
 
 }
+
+
+### Pruebas
+
+# max educación 
+
+Matrix_summary <- summary(as.factor(data_tibble$maxEducLevel))
+dotchart(Matrix_summary)
+
+
