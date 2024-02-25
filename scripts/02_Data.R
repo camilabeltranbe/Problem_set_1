@@ -58,8 +58,9 @@ view(head(data_tibble))
   ## c. Missing values
   
   ## Grafica general
+  png("grafica_missing")
   vis_miss(data_tibble)
-  
+  dev.off()
   ## Variable de salario 
   
   sum(is.na(data_tibble$y_salary_m))
