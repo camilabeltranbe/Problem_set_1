@@ -225,6 +225,25 @@ gender_plot <- ggplot(predicted_data, aes(x = age, y = predicted, color = sex)) 
                 scale_color_manual(values = c("Mujeres" = "darkblue", "Hombres" = "darkred"),name="") + # Cambiar colores de las líneas
 print(gender_plot)
 
+#Plot de distribucion de edad de ingreso maximo con bootstrap
+par(mfrow = c(1, 2))  # Divide el área de trazado en 1 fila y 2 columnas
+
+# Histograma para boot_rf$V1 (Panel A)
+hist(boot_rm$V1, main = "", ylab = "Frecuencia", xlab = "Edad de ingreso máximo")
+abline(v = 51.56067, col = "darkred", lty = 2)
+mtext("Panel A: Hombres", side = 3, line = 2)  # Agrega etiqueta para Panel A
+
+# Histograma para boot_rm$V1 (Panel B)
+hist(boot_rf$V1, main = "", ylab = "Frecuencia", xlab = "Edad de ingreso máximo")
+abline(v = 43.59954, col = "darkblue", lty = 2)
+mtext("Panel B: Mujeres", side = 3, line = 2)  # Agrega etiqueta para Panel B
+
+# Guardar el gráfico combinado en un objeto
+peak_age_gender_plot <- recordPlot()
+
+# Restaurar el diseño de la cuadrícula original
+par(mfrow = c(1, 1))
+
 #Guardar los graficos
 setwd(paste0(wd,"/Views"))
 ggsave("age_wage_profile_hombres.png", male_plot, width = 10, height = 6, units = "in")
