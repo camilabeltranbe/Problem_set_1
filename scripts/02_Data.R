@@ -12,7 +12,8 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        stargazer, # tables/output to TEX.
        readxl, # importar Excel
        writexl, # exportar Excel
-       boot) ## bootstrapping
+       boot,
+       ggpubr) ## bootstrapping
 
 
 #cambiar esta ruta por el directorio de cada uno
@@ -145,16 +146,132 @@ view(head(data_tibble))
 
 data_est_des <- as.data.frame(data_est_des)
 
-# Borrar: Poner variables mas importantes
+## a. Variables cuantitativas importantes
 des_vars= c("Edad", "Horas_Trabajadas", "Salario_mensual")
 stargazer(data_est_des[des_vars], type = "text", title="Estadísticas Descriptivas", digits=1, out="Tabla_Est_descriptivas.txt")
 
+## b. Variables Cuantitativas importantes
+# i. Edad y sexo
+  # Igual promedio de edad en hombres y mujeres - 39 años 
+data_tibble %>% 
+  group_by(sex) %>% 
+  summarise(mean(age, na.rm = TRUE))
+
+# ii. Horas trabajadas y sexo
+  # Las mujeres trabajan menos tiempo 
+data_tibble %>% 
+  group_by(sex) %>% 
+  summarise(mean(totalHoursWorked, na.rm = TRUE))
+
+# iii. Max educación 
+  # No se adjunto
+  # No es claro las categorias de educación
+Matrix_summary <- summary(as.factor(data_tibble$maxEducLevel))
+#dotchart(Matrix_summary)
+
+max_educ <- as.data.frame(Matrix_summary)
+max_educ$Educ <- c("A", "B", "C", "D", "E", "F")
+
+ggdotchart(
+  max_educ, x = "Educ", y = "Matrix_summary",
+  add = "segments",
+  ylab = "Número de individuos",
+  xlab = "Nivel de educación",
+  rotate = TRUE)
+
+# iv. Informalidad - Formalidad y Estrato
+table(data_tibble$estrato1)
+table(data_tibble$informal)
+table(data_tibble$formal)
+  #Prop. en estrato 2 y 3
+100*(table(data_tibble$estrato1)[2]+table(data_tibble$estrato1)[3])/nrow(data_tibble)
+  #Prop. Informales
+100*(table(data_tibble$informal)[2]/nrow(data_tibble))
+
+{
+table(data_tibble$informal)
+
+Inf_estra <- data_tibble %>% 
+              group_by(estrato1) %>% 
+              summarise(sum(informal, na.rm = TRUE))
+Inf_estra <- Inf_estra %>% 
+              rename("Estrato"="estrato1",
+                     "Informales"="sum(informal, na.rm = TRUE)")
+
+For_estra <- data_tibble %>% 
+                group_by(estrato1) %>% 
+                summarise(sum(formal, na.rm = TRUE))
+For_estra <- For_estra %>% 
+              rename("Estrato"="estrato1",
+                      "Formales"="sum(formal, na.rm = TRUE)")
+Inf_For_estr <- Inf_estra
+Inf_For_estr$Formales <-  For_estra$Formales
+
+Inf_For_estr$Estrato <- as.factor(Inf_For_estr$Estrato)
+
+I_F_E_longer <- Inf_For_estr %>%
+  pivot_longer(
+    cols = c(Informales, Formales),
+    names_to = "Formalidad",
+    values_to = "Individuos"
+  )
+}
+
+  # Grafico Estrato y formalidad
+  # La mayoria de la muestra se concentra en estratos 2 y 3
+ggdotchart(
+  I_F_E_longer, x = "Estrato", y = "Individuos", 
+  group = "Formalidad", color = "Formalidad", palette = "jco",
+  add = "segment", position = position_dodge(0.3),
+  sorting = "none",
+  facet.by = "Formalidad",
+  rotate = TRUE, legend = "none")
+
+## v. Histograma del salario por genero
+{
+# proceso previo
+# Salario medio por genero (datos brutos) 
+data_tibble$female <- 1 - data_tibble$sex
+data_tibble %>% 
+  group_by(female) %>% 
+  summarise(median(y_salary_m, na.rm =TRUE))
+
+# Salario medio por genero (datos tratados) 
+mean_wage <- data_tibble %>% group_by(female) %>% summarise(median(sal_imputado))
+Dif_sex <- mean_wage[2,2]*100/mean_wage[1,2] # Brecha salarial en Colombia 84%
+
+# Histograma
+data_low <- data_tibble %>% 
+  filter(sal_imputado < 2000000) %>% 
+  mutate(sal_mill=sal_imputado/1000000)
+13012/16539 # 80% 
+}
+# Histograma por genero
+dummy <- data_low %>%
+  group_by(female) %>%
+  summarize(mean = mean(sal_mill))
+
+
+ggplot(data_low, aes(x=sal_mill, group=as.factor(female), fill=as.factor(female))) +
+  geom_density(adjust=1.5, alpha=.5, color=NA) +
+  labs(title = "",
+       x = "Salario ($ Millones)",
+       y = "Densidad") +
+  scale_fill_manual(name = "Género", labels = c("Hombre", "Mujer"), values=c("wheat","turquoise4"))+
+  geom_vline(data = dummy, aes(xintercept = mean, color = c("darkgreen", "wheat4")), show.legend = FALSE)+
+  theme_minimal() +
+  theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
+}
+
 
 #### 6. Estimacion del perfil edad-salarios
-
+## No sirve
+{
+# Convertir datos a data.frame  
+  data_frame <- as.data.frame(data_tibble)
 #### Wage-age profile
 # Nuevas variables esta sección
-data_frame <- data_frame %>%
+  data_frame <- data_frame %>%
   mutate(Ln_wage_tot = log(y_total_m),
          age2 = age^2,
          Ln_wage_sal = log(y_salary_m))
@@ -179,39 +296,4 @@ box_plot
 }
 
 
-### Pruebas
-{
-# max educación 
-
-Matrix_summary <- summary(as.factor(data_tibble$maxEducLevel))
-dotchart(Matrix_summary)
-
-
-# Salario medio por genero (datos brutos) 
-data_tibble$female <- 1 - data_tibble$sex
-data_tibble %>% 
-  group_by(female) %>% 
-  summarise(median(y_salary_m, na.rm =TRUE))
-
-# Salario medio por genero (datos tratados) 
-mean_wage <- data_tibble %>% group_by(female) %>% summarise(median(sal_imputado))
-Dif_sex <- mean_wage[2,2]*100/mean_wage[1,2]
-
-# Histograma
-data_low <- data_tibble %>% 
-  filter(sal_imputado < 2000000) %>% 
-  mutate(sal_mill=sal_imputado/1000000)
-13012/32177
-
-# Histograma por genero
-
-ggplot(data_low, aes(x=sal_mill, group=as.factor(female), fill=as.factor(female))) +
-  geom_density(adjust=1.5, alpha=.2) +
-  labs(title = "Histograma de la brecha de género",
-       x = "Salario",
-       y = "Densidad") +
-  scale_fill_manual(name = "Género", labels = c("Hombre", "Mujer"), values=c("darkgreen","darkblue"))+
-  theme_minimal() +
-  theme(plot.background = element_rect(fill = "white")) # Establecer el fondo del gráfico como blanco
-}
 
