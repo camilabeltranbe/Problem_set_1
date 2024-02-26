@@ -11,7 +11,8 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        stargazer, # tables/output to TEX.
        readxl, # importar Excel
        writexl, # exportar Excel
-       boot) ## bootstrapping
+       boot, # bootstrapping
+       gridExtra) #para unir graficos
 
 #cambiar esta ruta por el directorio de cada uno
 ifelse(getwd()=="/Users/camilabeltran",
@@ -167,7 +168,7 @@ female_plot <- ggplot(female_data_tibble, aes(x = age, y = log_w)) +
                 geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
                 geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
                 scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue"),name="") +  # Colores de puntos y líneas
-                labs(title = "Perfil edad-ingreso: mujeres",
+                labs(title = "Panel B: Mujeres",
                      x = "Edad",
                      y = "Ln(salario)") +
                 theme_minimal()
@@ -205,12 +206,14 @@ male_plot <- ggplot(male_data_tibble, aes(x = age, y = log_w)) +
               geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
               geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
               scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkred"),name="") +  # Colores de puntos y líneas
-              labs(title = "Perfil edad-ingreso: hombres",
+              labs(title = "Panel A: Hombres",
                    x = "Edad",
                    y = "Ln(salario)") +
               theme_minimal()
 print(male_plot)
+male_female_plot <- grid.arrange(male_plot, female_plot, ncol = 2)
 
+print(male_female_plot)
 #plot de perfil edad - ingreso por sexo
 predicted_data <- rbind(female_data_tibble,male_data_tibble)
 predicted_data$sex <- factor(predicted_data$sex, levels = c(0, 1), labels = c("Mujeres", "Hombres"))
