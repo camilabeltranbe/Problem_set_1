@@ -12,7 +12,8 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        readxl, # importar Excel
        writexl, # exportar Excel
        boot, # bootstrapping
-       gridExtra) #para unir graficos
+       gridExtra,#para unir graficos
+       ggplot2) #graficos 
 
 #cambiar esta ruta por el directorio de cada uno
 ifelse(getwd()=="/Users/camilabeltran",
@@ -221,11 +222,11 @@ predicted_data$sex <- factor(predicted_data$sex, levels = c(0, 1), labels = c("M
 # Plot de prediccion por edad y sexo
 gender_plot <- ggplot(predicted_data, aes(x = age, y = predicted, color = sex)) +
                 geom_line() +  # Líneas continuas
-                labs(title = "Ingreso por edad y sexo",
-                     x = "Edad",
-                     y = "Ingreso") +
-                theme_minimal() +
-                scale_color_manual(values = c("Mujeres" = "darkblue", "Hombres" = "darkred"),name="") + # Cambiar colores de las líneas
+                labs(x = "Edad",
+                     y = "Ln(salario)") +
+                theme_test()+
+                theme(legend.position = "top")+  # Mueve la leyenda arriba
+                scale_color_manual(values = c("Mujeres" = "darkblue", "Hombres" = "darkred"),name="") # Cambiar colores de las líneas
 print(gender_plot)
 
 #Plot de distribucion de edad de ingreso maximo con bootstrap
