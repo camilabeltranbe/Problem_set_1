@@ -2,6 +2,8 @@
 ########### Punto 3 -Problem set 1 ################
 #################################################
 
+#### 1. Librerias y directorio ----
+{
 rm(list = ls()) #se borra la memoria
 library(pacman) 
 p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
@@ -12,11 +14,14 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        readxl, # importar Excel
        writexl, # exportar Excel
        boot) ## bootstrapping
+getwd()
 
-#cambiar esta ruta por el directorio de cada uno
+## Cambiar esta ruta por el directorio de cada uno
 ifelse(getwd()=="/Users/camilabeltran",
        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
-       wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1")
+       ifelse(test = getwd()=="C:/Users/Juan/Documents/Problem_set_1/scripts",
+              yes = wd <-  "C:/Users/Juan/Documents/Problem_set_1",
+              no = wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1"))
 
 #IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
 setwd(paste0(wd,"/stores"))
@@ -30,8 +35,9 @@ load("data_GEIH.RData")
 
 data_tibble <- as_tibble(data) 
 #view(head(data_tibble))
+}
 
-########## Selección de variables e imputación de Missing values ##########
+#### 2. Selección de variables e imputación de Missing values ----
 {
   ## Seleccion de variables con las cuales vamos a trabjar 
   data_tibble<- data_tibble %>% 
@@ -84,11 +90,14 @@ data_tibble <- as_tibble(data)
   sum(is.nan(data_tibble$log_w))
 }
 
-######################## Age - Wage Profile ################################
+#### 3. Age - Wage Profile ----
+# VOY ACA
 {
+  ## Creación de nueva variable y modelo 
 data_tibble$age2 <- (data_tibble$age)^2 #Creamos la variable age2
 model_Age_wage <- lm(log_w ~ age + age2, data = data_tibble) #Realizamos la regresión
 stargazer(model_Age_wage, type = "text") #observamos
+stargazer(model_Age_wage) #Latex
 
 #Realiza predicciones con el modelo
 data_tibble$predicted <- predict(model_Age_wage, newdata = data_tibble)

@@ -149,6 +149,7 @@ data_est_des <- as.data.frame(data_est_des)
 ## a. Variables cuantitativas importantes
 des_vars= c("Edad", "Horas_Trabajadas", "Salario_mensual")
 stargazer(data_est_des[des_vars], type = "text", title="Estadísticas Descriptivas", digits=1, out="Tabla_Est_descriptivas.txt")
+stargazer(data_est_des[des_vars], digits=1)
 
 ## b. Variables Cuantitativas importantes
 # i. Edad y sexo
