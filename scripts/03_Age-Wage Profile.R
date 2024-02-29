@@ -91,13 +91,25 @@ data_tibble <- as_tibble(data)
 }
 
 #### 3. Age - Wage Profile ----
-# VOY ACA
 {
   ## Creación de nueva variable y modelo 
 data_tibble$age2 <- (data_tibble$age)^2 #Creamos la variable age2
+#poner la variable oficio como factor porque es categorica
+data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
+data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))
+data_tibble$female <- 1 - data_tibble$sex
+data_tibble <- data_tibble %>% mutate (estrato1_factor= as.factor(estrato1))
+data_tibble <- data_tibble %>% mutate (sizeFirm_factor= as.factor(sizeFirm))
+
+  ## Modelos (Solo edad y con controles)
 model_Age_wage <- lm(log_w ~ age + age2, data = data_tibble) #Realizamos la regresión
+model_Age_wage_cont <- lm(log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor, data = data_tibble) #Realizamos la regresión
+summary(model_Age_wage_cont)
+
 stargazer(model_Age_wage, type = "text") #observamos
 stargazer(model_Age_wage) #Latex
+
+
 
 #Realiza predicciones con el modelo
 data_tibble$predicted <- predict(model_Age_wage, newdata = data_tibble)
