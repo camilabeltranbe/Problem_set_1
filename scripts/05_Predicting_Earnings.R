@@ -41,3 +41,7 @@ data_tibble <- as_tibble(data)
 
 }
 save.image("05_predicting_earnings.R")
+
+
+
+print("esto es una prueba")
