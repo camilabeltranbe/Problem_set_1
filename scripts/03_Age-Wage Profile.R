@@ -13,7 +13,8 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        stargazer, # tables/output to TEX.
        readxl, # importar Excel
        writexl, # exportar Excel
-       boot) ## bootstrapping
+       boot,
+       WVPlots) ## bootstrapping
 getwd()
 
 ## Cambiar esta ruta por el directorio de cada uno
@@ -92,6 +93,7 @@ data_tibble <- as_tibble(data)
 
 #### 3. Age - Wage Profile ----
 {
+  ### Modelos
   ## Creación de nueva variable y modelo 
 data_tibble$age2 <- (data_tibble$age)^2 #Creamos la variable age2
 #poner la variable oficio como factor porque es categorica
@@ -105,15 +107,51 @@ data_tibble <- data_tibble %>% mutate (sizeFirm_factor= as.factor(sizeFirm))
 model_Age_wage <- lm(log_w ~ age + age2, data = data_tibble) #Realizamos la regresión
 model_Age_wage_cont <- lm(log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor, data = data_tibble) #Realizamos la regresión
 summary(model_Age_wage_cont)
+  
+  # Visualizacion de modelos 
+stargazer(model_Age_wage, type = "text") # Modelo simple
+stargazer(model_Age_wage_cont, type = "text") #Modelo completo
+stargazer(model_Age_wage_cont, type = "text", keep = c("age", "age2", "female", "informal", "hoursWorkUsual") ) #Modelo completo
+stargazer(model_Age_wage, model_Age_wage_cont, type = "text", keep = c("constant","age", "age2", "female", "informal", "hoursWorkUsual") ) #Modelo completo
 
-stargazer(model_Age_wage, type = "text") #observamos
-stargazer(model_Age_wage) #Latex
+# Peak-age
+Peak_age_fun <- function(age_1, age_2) {
+   Edad_P<- -(age_1/(2*age_2))
+  return (Edad_P)
+                                      }
+
+Peak_age_fun(age_1 = 0.046,age_2 = -0.0005) #Modelo 1 (46 años)
+Peak_age_fun(age_1 = 0.024,age_2 = -0.0002) #Modelo 2 (60 años)
 
 
-
-#Realiza predicciones con el modelo
+  # Realiza predicciones con el modelo
 data_tibble$predicted <- predict(model_Age_wage, newdata = data_tibble)
+data_tibble$predicted_cont <- predict(model_Age_wage_cont, newdata = data_tibble)
 
+ggplot(data_tibble, aes(x = predicted_cont, y = log_w))+
+  geom_point()+
+  geom_abline(color ="darkblue")+
+  ggtitle("temperature vs. linear model prediction")
+
+
+# Calculate error Modelo simple
+err <- data_tibble$predicted - data_tibble$log_w
+# Square the error vector
+err2 <- err^2
+# Take the mean, and sqrt it
+(rmse <-sqrt(mean(err2))) # 0.683
+
+# Calculate error Modelo Completo
+err_cont <- data_tibble$predicted_cont - data_tibble$log_w
+# Square the error vector
+err2_cont <- err_cont^2
+# Take the mean, and sqrt it
+(rmse_cont <-sqrt(mean(err2_cont, na.rm = TRUE))) # 0.413
+}
+
+
+
+{
 #Intervalos de confianza con bootstrap
 Age_Wage_Profile_fn<-function(data,index){
   f <- lm(log_w ~ age + age2, data = data_tibble, subset= index)
@@ -121,7 +159,7 @@ Age_Wage_Profile_fn<-function(data,index){
   b2 <- f$coefficients[3]
   max_edad <- -(b1)/(2*b2)
   return(max_edad)
-}
+    }
 
 #Verifiquemos que la función... funciona!
 Age_Wage_Profile_fn(data_tibble,1:nrow(data_tibble))
