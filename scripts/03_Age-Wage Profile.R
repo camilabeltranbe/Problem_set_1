@@ -22,7 +22,7 @@ ifelse(getwd()=="/Users/camilabeltran",
        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
        ifelse(test = getwd()=="C:/Users/Juan/Documents/Problem_set_1/scripts",
               yes = wd <-  "C:/Users/Juan/Documents/Problem_set_1",
-              no = wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1"))
+              no = wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1"))
 
 #IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
 setwd(paste0(wd,"/stores"))
@@ -128,10 +128,13 @@ Peak_age_fun(age_1 = 0.024,age_2 = -0.0002) #Modelo 2 (60 años)
 data_tibble$predicted <- predict(model_Age_wage, newdata = data_tibble)
 data_tibble$predicted_cont <- predict(model_Age_wage_cont, newdata = data_tibble)
 
+  #Modelo predicted vs salario 
 ggplot(data_tibble, aes(x = predicted_cont, y = log_w))+
-  geom_point()+
+  geom_point(color = "#00AFBB")+
   geom_abline(color ="darkblue")+
-  ggtitle("temperature vs. linear model prediction")
+  xlab("Predicción")+
+  ylab("Log(Salario)")+
+  theme_minimal()
 
 
 # Calculate error Modelo simple
@@ -149,8 +152,7 @@ err2_cont <- err_cont^2
 (rmse_cont <-sqrt(mean(err2_cont, na.rm = TRUE))) # 0.413
 }
 
-
-
+#### 4. Bootstrap estimation ----
 {
 #Intervalos de confianza con bootstrap
 Age_Wage_Profile_fn<-function(data,index){
@@ -183,19 +185,5 @@ Age_wage_P_plot <- ggplot(data_tibble, aes(x = age, y = log_w)) +
   theme_minimal()
 print(Age_wage_P_plot)
 }
-
-
-
-# al derivar age, con respecto a y, e igualar a cero queda Age=-B_1/(2B_2)
-# Edad maximizadora 
-Age_max <- -(model_Age_wage$coefficients["age"])/(2*model_Age_wage$coefficients["age2"])
-Age_max # Resulta ser a los 41 años. 
-
-box_plot <- ggplot(data=data_frame , mapping = aes(as.factor(age) , Ln_wage_sal)) + 
-  geom_boxplot()+
-  geom_vline(xintercept = (40 - 16),
-             linetype = 1,
-             color = 2)
-box_plot
 
 save.image("03_Age-Wage Profile.R")
