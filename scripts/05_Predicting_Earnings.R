@@ -26,7 +26,7 @@ ifelse(getwd()=="/Users/camilabeltran",
 ##NO FUNCIONA###
 #IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
 setwd(paste0(wd,"/stores"))
-load("05_predicting_earnings.R")
+load("05_Predicting_Earnings.R")
 
 #A continuación, encontrarán el código realizado para llegar a los resultados que se encuentran cargados en la imagen:
 
@@ -44,7 +44,10 @@ load("gender_gap_earnings.R")
 
 #Quitamos bases que no necesitamos
 rm(age_wage_female,age_wage_male,boot_rf,boot_rm,boot_r,earnings_gap,equal_pay_fwl,equal_pay_ols,female_data_tibble,gender_plot,
-   male_data_tibble,male_plot,predicted_data,female,res1,female_fn,male_fn,female_plot)
+   male_data_tibble,male_plot,predicted_data,female,res1,female_fn,male_fn,female_plot,male_female_plot,peak_age_gender_plot,
+   Age_wage_P_plot,Age_Wage_Profile_fn,boot_results03,box_plot,data_est_des,data_low,data_frame,data_table_missing,Dif_sex,dummy,
+   For_estra,I_F_E_longer,Inf_estra,Inf_For_estr,max_educ,mean_wage,model_Age_wage,model_Age_wage_cont,des_vars,err,err_cont,
+   err2,err2_cont,Matrix_summary,rmse,rmse_cont,Age_Wage_Profile_fn,Peak_age_fun)
 
 
 #- a | División de la muestra --------------------------------------------------------------
@@ -145,8 +148,9 @@ score4a
 
 ### Especificaciones adicionales ###
 
-#Modelo 5    
-forma_5<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+#Modelo 5 -> 
+forma_5<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + 
+  estrato1_factor + sizeFirm_factor 
 
 modelo5a <- lm(forma_5,
                data = training)
