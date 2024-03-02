@@ -60,14 +60,8 @@ rm(age_wage_female,age_wage_male,boot_rf,boot_rm,boot_r,earnings_gap,equal_pay_f
 #(No olvide establecer una semilla para lograr reproducibilidad. En R, por ejemplo, puede usar set.seed(10101), 
 #donde 10101 es la semilla).
 
-#Agregamos algunas variables necesarias para las especificaciones del punto b  
-data_tibble <- data_tibble %>% mutate (estrato1_factor= as.factor(estrato1))
-data_tibble <- data_tibble %>% mutate (sizeFirm_factor= as.factor(sizeFirm))
-data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
-data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))  
-  
 #Para replicabilidad seteamos la semilla
-set.seed(10101)    
+set.seed(10109)    
 
 #Utilizamos la función createDataPartition para dividir aleatoriamente el conjunto de datos entre el entrenamiento y la prueba
 #de acuerdo con la proporción
@@ -93,6 +87,8 @@ nrow(testing)/nrow(data_tibble)
 {
 #Informar y comparar el rendimiento predictivo en términos del RMSE de todas las especificaciones anteriores con al menos 
 #cinco (5) especificaciones adicionales que exploren no linealidades y complejidad.  
+  
+### Entrenando a los modelos ###  
   
   
 ### Especificaciones anteriores ###  
@@ -148,9 +144,9 @@ score4a
 
 ### Especificaciones adicionales ###
 
-#Modelo 5 -> 
+#Modelo 5 -> agregamos experiencia y horas trabajadas al cuadrado
 forma_5<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + 
-  estrato1_factor + sizeFirm_factor 
+  estrato1_factor + sizeFirm_factor + experiencia + hoursWorkUsual^2
 
 modelo5a <- lm(forma_5,
                data = training)
@@ -161,9 +157,9 @@ predictions <- predict(modelo5a, testing)
 score5a<- RMSE(predictions, testing$log_w )
 score5a 
 
-#Modelo 6    
-forma_6<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
-  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+#Modelo 6 -> quitamos informal, size firm factor y agregamos experiencia y experiencia al cuadrado
+forma_6<- log_w ~ age + age2 + female + oficio_factor + maxEducLevel_factor + hoursWorkUsual + 
+  estrato1_factor + experiencia + experiencia^2
 
 modelo6a <- lm(forma_6,
                data = training)
@@ -174,9 +170,10 @@ predictions <- predict(modelo6a, testing)
 score6a<- RMSE(predictions, testing$log_w )
 score6a 
 
-#Modelo 7    
+#Modelo 7 -> agregamos experiencia, experiencia al cuadrado, experiencia al cubo, hours work usual al cuadrado y el logaritmo de la edad
 forma_7<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
-  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor + experiencia + experiencia^2 + experiencia^3  + hoursWorkUsual^2 +
+  log(age)
 
 modelo7a <- lm(forma_7,
                data = training)
@@ -187,9 +184,9 @@ predictions <- predict(modelo7a, testing)
 score7a<- RMSE(predictions, testing$log_w )
 score7a 
 
-#Modelo 8    
+#Modelo 8 -> agregamos experiencia al cuadrado y el logaritmo de las hoursWorkUsual
 forma_8<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
-  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor + experiencia^2 + log(hoursWorkUsual)
 
 modelo8a <- lm(forma_8,
                data = training)
@@ -200,9 +197,9 @@ predictions <- predict(modelo8a, testing)
 score8a<- RMSE(predictions, testing$log_w )
 score8a 
 
-#Modelo 9    
-forma_9<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
-  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+#Modelo 9 ->  quitamos female, informal, hoursWorkUsual y agregamos el logaritmo de hoursWorkUsual, experiencia al cubo y el log de edad
+forma_9<- log_w ~ age + age2 + oficio_factor + maxEducLevel_factor + 
+  estrato1_factor + sizeFirm_factor + log(hoursWorkUsual) + experiencia^3 + log(age)
 
 modelo9a <- lm(forma_9,
                data = training)
@@ -216,7 +213,132 @@ score9a
 
 ## K-Fold Cross-Validation ##
 
-  
+#Queremos comparar también a través de validación cruzada los modelos
+
+control <- trainControl(
+  method = "cv", ## Define the method for cross validation 
+  number = 5) ## the number fof folds. 
+
+#Modelo 1
+modelo1b <- train(forma_1,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo1b
+
+#Revisemos el rendimiento en cada k-fold
+modelo1b$resample
+
+#Guardemos el RMSE
+score1b<- mean(modelo1b$resample$RMSE)
+
+
+#Modelo 2
+modelo2b <- train(forma_2,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo2b
+
+#Revisemos el rendimiento en cada k-fold
+modelo2b$resample
+
+#Guardemos el RMSE
+score2b<- mean(modelo2b$resample$RMSE)
+
+#Modelo 3
+modelo3b <- train(forma_3,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo3b
+
+#Revisemos el rendimiento en cada k-fold
+modelo3b$resample
+
+#Guardemos el RMSE
+score3b<- mean(modelo3b$resample$RMSE)
+
+
+#Modelo 4
+modelo4b <- train(forma_4,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo4b
+
+#Revisemos el rendimiento en cada k-fold
+modelo4b$resample
+
+#Guardemos el RMSE
+score4b<- mean(modelo4b$resample$RMSE)
+
+
+#Modelo 5
+modelo5b <- train(forma_5,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo5b
+
+#Revisemos el rendimiento en cada k-fold
+modelo5b$resample
+
+#Guardemos el RMSE
+score5b<- mean(modelo5b$resample$RMSE)
+
+#Modelo 6
+modelo6b <- train(forma_6,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo6b
+
+#Revisemos el rendimiento en cada k-fold
+modelo6b$resample
+
+#Guardemos el RMSE
+score6b<- mean(modelo6b$resample$RMSE)
+
+#Modelo 7
+modelo7b <- train(forma_7,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo7b
+
+#Revisemos el rendimiento en cada k-fold
+modelo7b$resample
+
+#Guardemos el RMSE
+score7b<- mean(modelo7b$resample$RMSE)
+
+
+#Modelo 8
+modelo8b <- train(forma_8,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo8b
+
+#Revisemos el rendimiento en cada k-fold
+modelo8b$resample
+
+#Guardemos el RMSE
+score8b<- mean(modelo8b$resample$RMSE)
+
+#Modelo 9
+modelo9b <- train(forma_9,  ## define the functional form (i.e the variable to predict and the features)
+                  data = data_tibble,  # the data frame
+                  method = 'lm',  # the method
+                  trControl= control)  # input our cross validation method. 
+modelo9b
+
+#Revisemos el rendimiento en cada k-fold
+modelo9b$resample
+
+#Guardemos el RMSE
+score9b<- mean(modelo9b$resample$RMSE)
 }
 
 #- c | Errores de predicción --------------------------------------------------------------
