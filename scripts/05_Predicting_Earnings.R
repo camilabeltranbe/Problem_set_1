@@ -42,6 +42,11 @@ load("gender_gap_earnings.R")
 #data_tibble <- as_tibble(data) 
 #view(head(data_tibble))
 
+#Quitamos bases que no necesitamos
+rm(age_wage_female,age_wage_male,boot_rf,boot_rm,boot_r,earnings_gap,equal_pay_fwl,equal_pay_ols,female_data_tibble,gender_plot,
+   male_data_tibble,male_plot,predicted_data,female,res1,female_fn,male_fn,female_plot)
+
+
 #- a | División de la muestra --------------------------------------------------------------
 
 #En las secciones anteriores, se estimó algunas especificaciones teniendo en cuenta la inferencia. 
@@ -52,6 +57,7 @@ load("gender_gap_earnings.R")
 #(No olvide establecer una semilla para lograr reproducibilidad. En R, por ejemplo, puede usar set.seed(10101), 
 #donde 10101 es la semilla).
 
+#Agregamos algunas variables necesarias para las especificaciones del punto b  
 data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
 data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))  
   
