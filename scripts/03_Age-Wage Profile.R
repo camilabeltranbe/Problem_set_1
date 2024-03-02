@@ -37,7 +37,7 @@ load("data.R")
 }
 
 
-#### 3. Age - Wage Profile ----
+#### 2. Age - Wage Profile ----
 {
   ### Modelos
   ## Creación de nueva variable y modelo 
@@ -66,8 +66,8 @@ Peak_age_fun <- function(age_1, age_2) {
   return (Edad_P)
                                       }
 
-Peak_age_fun(age_1 = 0.046,age_2 = -0.0005) #Modelo 1 (46 años)
-Peak_age_fun(age_1 = 0.024,age_2 = -0.0002) #Modelo 2 (60 años)
+Peak_age_mod_simple <- Peak_age_fun(age_1 = model_Age_wage$coefficients[2],age_2 = model_Age_wage$coefficients[3]) #Modelo 1 (46 años)
+Peak_age_mod_ <- Peak_age_fun(age_1 = model_Age_wage_cont$coefficients[2],age_2 = model_Age_wage_cont$coefficients[3]) #Modelo 2 (60 años)
 
 
   # Realiza predicciones con el modelo
@@ -98,7 +98,7 @@ err2_cont <- err_cont^2
 (rmse_cont <-sqrt(mean(err2_cont, na.rm = TRUE))) # 0.413
 }
 
-#### 4. Bootstrap estimation ----
+#### 3. Bootstrap estimation ----
 {
 #Intervalos de confianza con bootstrap
 Age_Wage_Profile_fn<-function(data,index){
@@ -114,7 +114,7 @@ Age_Wage_Profile_fn(data_tibble,1:nrow(data_tibble))
 
 #Se utiliza la funcion boot para estimar la regresion con bootstrap
 set.seed(5382)
-boot_results03 <- boot(data_tibble, Age_Wage_Profile_fn, R = 100)
+boot_results03 <- boot(data_tibble, Age_Wage_Profile_fn, R = 1000)
 boot_results03 <- as.data.frame(boot_results03$t)
 hist(boot_results03$V1) #distribucion del valor maximo de la edad con bootstrap
 quantile(boot_results03$V1,0.025) #percentil 2.5 (47.16848)
