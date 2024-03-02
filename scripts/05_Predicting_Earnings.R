@@ -107,7 +107,8 @@ score1a<- RMSE(predictions, testing$log_w )
 score1a 
 
 #Modelo 2 -> segundo modelo del punto 3 con controles   
-forma_2<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor
+forma_2<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor
 
 modelo2a <- lm(forma_2,
                data = training)
@@ -207,6 +208,10 @@ predictions <- predict(modelo9a, testing)
 
 score9a<- RMSE(predictions, testing$log_w )
 score9a 
+
+
+## K-Fold Cross-Validation ##
+
   
 }
 

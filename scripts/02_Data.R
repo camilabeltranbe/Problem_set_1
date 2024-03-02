@@ -16,13 +16,17 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        ggpubr) ## bootstrapping
 
 
+
 #cambiar esta ruta por el directorio de cada uno
 
 ifelse(getwd()=="/Users/camilabeltran",
        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
        ifelse(getwd()=="/User/OneDrive - Universidad de los andes",
        wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1",
-       wd <- "C:/Users/Juan/Documents/Problem_set_1"))
+       ifelse(getwd()=="C:/Users/Juan/",
+       wd <- "C:/Users/Juan/Documents/Problem_set_1",
+       wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1")))
+
 setwd(paste0(wd,"/stores"))
 #Cargar datos a partir de 0_1_web_scraping###
 load("data_GEIH.RData")
@@ -38,7 +42,7 @@ view(head(data_tibble))
   data_tibble<- data_tibble %>% 
     select(directorio, secuencia_p, orden, estrato1, sex, age, ocu, oficio, orden, totalHoursWorked,
            ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
-           ingtotes,ingtotob, y_salary_m, y_total_m, hoursWorkUsual) 
+           ingtotes,ingtotob, y_salary_m, y_total_m, hoursWorkUsual, experiencia=p6426) 
   #view(head(data_tibble))
   # Se eliminaron 157 variables de la muestra inicial, dejando la nueva muestra con 21 variables.
 }
@@ -73,10 +77,10 @@ view(head(data_tibble))
   
   data_table_missing <- data_table_missing %>% 
     select(ID_Hogar, Genero, Estrato, Edad, Empleado, Hor_trabajadas, 
-           Informal, Tam_Firma, Nivel_Educ, Ing_tot, Salario_m)
+           Informal, Tam_Firma, Nivel_Educ, Ing_tot, Salario_m, experiencia)
   
   ## Grafica general
-  png("grafica_missing") # Formato grafica
+  png("grafica_missing.png") # Formato grafica
   vis_miss(data_table_missing) # tabla missing
   dev.off() # Cierra la grafica
   #vis_dat(data_table_missing) # Opcion 2
