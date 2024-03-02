@@ -210,6 +210,7 @@ predictions <- predict(modelo9a, testing)
 score9a<- RMSE(predictions, testing$log_w )
 score9a 
 
+#mujer y estado civil o jefe de hogar
 
 ## K-Fold Cross-Validation ##
 
@@ -373,6 +374,15 @@ ggplot(scores, ) +
 #un modelo defectuoso?
   
 #revisar script andres leverage (penultima clase)  
+  
+  
+#Hacemos un rápido chequeo para ver cuál es el modelo con el error de predicción más bajo
+indice_min_k <- which.min(RMSE_kfold) 
+indice_min_v <- which.min(RMSE_vsa)
+#En ambos casos es el modelo 8  
+
+
+
 }
 
 #- d | LOOCV --------------------------------------------------------------
@@ -381,6 +391,59 @@ ggplot(scores, ) +
 #Para los dos modelos con el error predictivo más bajo en la sección anterior, calcule el error predictivo utilizando 
 #la validación cruzada de dejar uno fuera (LOOCV). Compare los resultados del error de prueba con los obtenidos con el 
 #enfoque del conjunto de validación y explore los vínculos potenciales con la estadística de influencia.
+
+#Revisemos cual es el segundo menor en ambos approaches
+RMSE_kfold_sin_min <- RMSE_kfold[-indice_min_k]
+RMSE_vsa_sin_min <- RMSE_vsa[-indice_min_v]
+  
+# Encontrar el índice del segundo mínimo valor 
+indice_segundo_min_k <- which.min(RMSE_kfold_sin_min)
+indice_segundo_min_v <- which.min(RMSE_vsa_sin_min)
+
+indice_segundo_min_k_ajustado <- ifelse(indice_segundo_min_k>=8,9,indice_segundo_min_k)
+indice_segundo_min_v_ajustado <- ifelse(indice_segundo_min_v>=8,9,indice_segundo_min_v)
+
+indice_segundo_min_k_ajustado
+indice_segundo_min_v_ajustado
+
+#Podemos ver que para el k fold cross validation es el modelo 7 para la primera validación es el modelo 9
+#Revisemos cuál es menor
+score7b<score9a
+
+#Nos quedamos como segundo menor con el modelo 7
+
+### Validación LOOCV ###
+
+control <- trainControl(
+  method = "LOOCV") ## input the method Leave One Out Cross Validation
+
+
+#Modelo 8
+modelo8c <- train(forma_8,
+                  data = data_tibble,
+                  method = 'lm', 
+                  trControl= control)
+modelo8c
+
+#Podemos obtener la predicción en cada iteración (observación) usando
+head(modelo8c$pred)
+
+#Guardamos el RMSE
+score8c<-RMSE(modelo8c$pred$pred, data_tibble$log_w)
+
+
+#Modelo 7
+modelo7c <- train(forma_7,
+                  data = data_tibble,
+                  method = 'lm', 
+                  trControl= control)
+modelo7c
+
+#Podemos obtener la predicción en cada iteración (observación) usando
+head(modelo7c$pred)
+
+#Guardamos el RMSE
+score7c<-RMSE(modelo7c$pred$pred, data_tibble$log_w)
 
 }
 
