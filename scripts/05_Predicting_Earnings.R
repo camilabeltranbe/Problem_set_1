@@ -58,6 +58,8 @@ rm(age_wage_female,age_wage_male,boot_rf,boot_rm,boot_r,earnings_gap,equal_pay_f
 #donde 10101 es la semilla).
 
 #Agregamos algunas variables necesarias para las especificaciones del punto b  
+data_tibble <- data_tibble %>% mutate (estrato1_factor= as.factor(estrato1))
+data_tibble <- data_tibble %>% mutate (sizeFirm_factor= as.factor(sizeFirm))
 data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
 data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))  
   
@@ -92,8 +94,8 @@ nrow(testing)/nrow(data_tibble)
   
 ### Especificaciones anteriores ###  
 
-#Modelo 1    
-forma_1<- log_w ~ female 
+#Modelo 1 -> primero modelo del punto 3
+forma_1<- log_w ~ age + age2 
   
 modelo1a <- lm(forma_1,
                data = training)
@@ -104,8 +106,8 @@ predictions <- predict(modelo1a, testing)
 score1a<- RMSE(predictions, testing$log_w )
 score1a 
 
-#Modelo 2    
-forma_2<- log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor 
+#Modelo 2 -> segundo modelo del punto 3 con controles   
+forma_2<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor
 
 modelo2a <- lm(forma_2,
                data = training)
@@ -116,8 +118,8 @@ predictions <- predict(modelo2a, testing)
 score2a<- RMSE(predictions, testing$log_w )
 score2a 
 
-#Modelo 3    ##PREGUNTAR #incluir todos
-forma_3<- log_w ~ age + age2 
+#Modelo 3 -> primer modelo earnings gap del punto 4
+forma_3<- log_w ~ female 
 
 modelo3a <- lm(forma_3,
                data = training)
@@ -128,12 +130,8 @@ predictions <- predict(modelo3a, testing)
 score3a<- RMSE(predictions, testing$log_w )
 score3a 
 
-
-##############################
-
-
-#Modelo 4    
-forma_4<- log_w ~ log_ingtot + age  + gender 
+#Modelo 4 -> segundo modelo earnings gap con controles del punto 4  
+forma_4<- log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor  
 
 modelo4a <- lm(forma_4,
                data = training)
@@ -147,7 +145,7 @@ score4a
 ### Especificaciones adicionales ###
 
 #Modelo 5    
-forma_5<- log_w ~ log_ingtot + age  + gender 
+forma_5<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor 
 
 modelo5a <- lm(forma_5,
                data = training)
@@ -157,6 +155,58 @@ predictions <- predict(modelo5a, testing)
 
 score5a<- RMSE(predictions, testing$log_w )
 score5a 
+
+#Modelo 6    
+forma_6<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+
+modelo6a <- lm(forma_6,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo6a, testing)
+
+score6a<- RMSE(predictions, testing$log_w )
+score6a 
+
+#Modelo 7    
+forma_7<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+
+modelo7a <- lm(forma_7,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo7a, testing)
+
+score7a<- RMSE(predictions, testing$log_w )
+score7a 
+
+#Modelo 8    
+forma_8<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+
+modelo8a <- lm(forma_8,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo8a, testing)
+
+score8a<- RMSE(predictions, testing$log_w )
+score8a 
+
+#Modelo 9    
+forma_9<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
+  hoursWorkUsual + estrato1_factor + sizeFirm_factor 
+
+modelo9a <- lm(forma_9,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo9a, testing)
+
+score9a<- RMSE(predictions, testing$log_w )
+score9a 
   
 }
 
