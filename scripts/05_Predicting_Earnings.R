@@ -52,6 +52,9 @@ load("gender_gap_earnings.R")
 #(No olvide establecer una semilla para lograr reproducibilidad. En R, por ejemplo, puede usar set.seed(10101), 
 #donde 10101 es la semilla).
 
+data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
+data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))  
+  
 #Para replicabilidad seteamos la semilla
 set.seed(10101)    
 
@@ -79,6 +82,76 @@ nrow(testing)/nrow(data_tibble)
 {
 #Informar y comparar el rendimiento predictivo en términos del RMSE de todas las especificaciones anteriores con al menos 
 #cinco (5) especificaciones adicionales que exploren no linealidades y complejidad.  
+  
+  
+### Especificaciones anteriores ###  
+
+#Modelo 1    
+forma_1<- log_w ~ female 
+  
+modelo1a <- lm(forma_1,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo1a, testing)
+
+score1a<- RMSE(predictions, testing$log_w )
+score1a 
+
+#Modelo 2    
+forma_2<- log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor 
+
+modelo2a <- lm(forma_2,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo2a, testing)
+
+score2a<- RMSE(predictions, testing$log_w )
+score2a 
+
+#Modelo 3    ##PREGUNTAR #incluir todos
+forma_3<- log_w ~ age + age2 
+
+modelo3a <- lm(forma_3,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo3a, testing)
+
+score3a<- RMSE(predictions, testing$log_w )
+score3a 
+
+
+##############################
+
+
+#Modelo 4    
+forma_4<- log_w ~ log_ingtot + age  + gender 
+
+modelo4a <- lm(forma_4,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo4a, testing)
+
+score4a<- RMSE(predictions, testing$log_w )
+score4a 
+
+### Especificaciones adicionales ###
+
+#Modelo 5    
+forma_5<- log_w ~ log_ingtot + age  + gender 
+
+modelo5a <- lm(forma_5,
+               data = training)
+
+#Rendimiento fuera de muestra
+predictions <- predict(modelo5a, testing)
+
+score5a<- RMSE(predictions, testing$log_w )
+score5a 
+  
 }
 
 #- c | Errores de predicción --------------------------------------------------------------
@@ -89,6 +162,8 @@ nrow(testing)/nrow(data_tibble)
 #¿Hay alguna observación en los extremos de la distribución del error de predicción? 
 #¿Son estos valores atípicos personas potenciales que la DIAN debería investigar o son simplemente el producto de 
 #un modelo defectuoso?
+  
+#revisar script andres leverage (penultima clase)  
 }
 
 #- d | LOOCV --------------------------------------------------------------
