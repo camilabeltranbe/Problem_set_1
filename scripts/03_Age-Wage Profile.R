@@ -20,9 +20,11 @@ getwd()
 ## Cambiar esta ruta por el directorio de cada uno
 ifelse(getwd()=="/Users/camilabeltran",
        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
-       ifelse(test = getwd()=="C:/Users/Juan/Documents/Problem_set_1/scripts",
-              yes = wd <-  "C:/Users/Juan/Documents/Problem_set_1",
-              no = wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1"))
+       ifelse(getwd()=="C:/Users/Juan/Documents/Problem_set_1/scripts",
+              wd <-  "C:/Users/Juan/Documents/Problem_set_1",
+                ifelse(test = getwd()=="C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1",
+                       wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1",
+                       wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1")))
 
 #IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
 setwd(paste0(wd,"/stores"))
