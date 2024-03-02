@@ -339,6 +339,28 @@ modelo9b$resample
 
 #Guardemos el RMSE
 score9b<- mean(modelo9b$resample$RMSE)
+
+
+### Comparación ###
+
+## Guardamos todos los RMSE en un data set: 
+scores<- data.frame( Model= c(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                     RMSE_vsa= c(score1a, score2a, score3a, score4a, score5a, score6a, score7a, score8a, score9a), 
+                     RMSE_kfold= c(score1b, score2b, score3b, score4b, score5b, score6b, score7b, score8b, score9b))
+
+scores
+
+#Grafiquemos ambos approaches
+RMSE_vsa= c(score1a, score2a, score3a, score4a, score5a, score6a, score7a, score8a, score9a)
+RMSE_kfold= c(score1b, score2b, score3b, score4b, score5b, score6b, score7b, score8b, score9b)
+
+scores<- data.frame( Model= rep(c(1, 2, 3, 4, 5, 6, 7, 8, 9),2),
+                     Approach= c(rep("Validation",9),rep("K-Fold",9)),
+                     RMSE= c(RMSE_vsa, RMSE_kfold))
+
+ggplot(scores, ) + 
+  geom_line(aes(x=Model,y=RMSE,col=Approach), size=0.5)+
+  theme_bw() 
 }
 
 #- c | Errores de predicción --------------------------------------------------------------
