@@ -23,6 +23,7 @@ ifelse(getwd()=="/Users/camilabeltran",
               ifelse(test = getwd()=="C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1",
                      wd <- "C:/Users/juanp.rodriguez/Documents/GitHub/Problem_set_1",
                      wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1")))
+wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1"
 
 #IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
 setwd(paste0(wd,"/stores"))
@@ -46,7 +47,7 @@ data_tibble <- data_tibble %>% mutate (oficio_factor= as.factor(oficio))
 data_tibble <- data_tibble %>% mutate (maxEducLevel_factor= as.factor(maxEducLevel))
 
 # usando OLS  
-equal_pay_ols <- lm(log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble)
+equal_pay_ols <- lm(log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor + Jefe_h, data = data_tibble)
 equal_pay_ols$coefficients[2] #extrae el coeficiente de interes
 #Donde:
 #maxEducLevel_factor	= max. education level attained
@@ -55,8 +56,8 @@ equal_pay_ols$coefficients[2] #extrae el coeficiente de interes
 #age=edad
 
 # usando FWL
-res1 <- residuals(lm(log_w ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble)) 
-female <- residuals(lm(female ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble))
+res1 <- residuals(lm(log_w ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor  + Jefe_h, data = data_tibble)) 
+female <- residuals(lm(female ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor  + Jefe_h , data = data_tibble))
 equal_pay_fwl <- lm(res1 ~ female)
 coefficients(equal_pay_fwl)[2]
 
@@ -67,8 +68,8 @@ stargazer(equal_pay_fwl,earnings_gap,type = "text",dep.var.labels = c("Ln(salari
 # ii) FWL- Bootstrap
 # funcion para realizar bootstrap
 female_fn<-function(data,index){
-  res1 <- residuals(lm(log_w ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble, subset=index)) 
-  res2 <- residuals(lm(female ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor, data = data_tibble, subset=index))
+  res1 <- residuals(lm(log_w ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor  + Jefe_h, data = data_tibble, subset=index)) 
+  res2 <- residuals(lm(female ~ age + maxEducLevel_factor + hoursWorkUsual + oficio_factor  + Jefe_h, data = data_tibble, subset=index))
   coef(lm(res1 ~ res2, subset=index))[2] #retorna el segundo coeficiente de la regresion
 }
 #Verifiquemos que la función... funciona!
