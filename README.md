@@ -15,13 +15,34 @@ Este repositorio almacena toda la información utilizada para la solución del p
     wd <- mi_ruta/Problem_set_1
     ```
     Luego de determinar la ruta, se puede correr el código desde la linea 17.
-  * `01_web_scraping`: Este código realiza _web scraping_ de la [página web](https://ignaciomsarmiento.github.io/GEIH2018_sample/) del profesor Ignacio Sarmiento, para la adquisición de los datos. Además, guarda la base de datos en formato _.xlsx_ y _.RData_ en la carpeta de `stores`.
+  * `01_web_scraping`: Este código realiza _web scraping_ de la [página web](https://ignaciomsarmiento.github.io/GEIH2018_sample/) del profesor Ignacio Sarmiento, para la adquisición de los datos. Además, guarda la base de datos en formato _.RData_ en la carpeta de `stores`.
+  * `02_data`: Este código realiza la limpieza de la base de datos, mantiene las variables de interés, realiza imputación de datos y estadísticas descriptivas. Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
+  * `03_age_wage_profile`: Este código realiza las estimaciones de la sección 3 del problem set (teoría edad-salario). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
+  * `04_gender_earnings_gap`: Este código realiza las estimaciones de la sección 4 del problem set (brecha salarial por género). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
+  * `05_predicting_earnings`: Este código realiza las estimaciones de la sección 5 del problem set (predicciones de ingreso). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
+* `stores`: En esta carpeta están la base de datos completa de la página web y los resultados de cada script en formato _.RData_. Los archivos _.RData_ tienen la facilidad de cargar los resultados sin tener que correr cada código, lo cual puede tardarse al implementar las metologias de _bootstrap_ y _loocv_.
+  * 01_data_GEIH.RData
+  * 02_data.RData
+  * 03_age_wage_profile.RData
+  * 04_gender_gap_earnings.RData
+  * 05_predicting_earnings.RData  
+* `views`: En esta carpeta están las tablas y figuras del documento final.
+
+  * `views/tables`
+    
+    1. Estadísticas descriptivas de las variables cuantitativas más relevantes
+    2. Estimación Salario - Edad
+    3. Estimación de la brecha salarial por género
+    4. Estimación del perfil edad-ingreso por género   
+    
+  * `views/figures`
   
-* `stores`: contains all the data sets used. If files are "too big" for GitHub, include a document describing where people can access the data.
-4. `views`: contains all figures and tables
-
-## Some general reminders: 
-
-- It is essential how you write up the document. Be sure to be organized and consistent in explaining your equations and findings. Make sure that there are no compilation errors.
-- Write understandable code, separating and commenting on each section. Coding, like in writing, style is critical for readability. If the code is well written, it should be self-contained. There is no need to write everything you did. I encourage you to follow the [tidyverse style guide](https://style.tidyverse.org/)
-
+    1. Proporción de missing values de las variables más representativas
+    2. Distribución de Salarios por Género
+    3. Frecuencia de individuos por estrato, segmentado por el grado de formalidad laboral
+    4. Dispersión entre los valores observados del salario en su transformación logarítmica vs los valores predichos por el modelo con controles
+    5. Histograma del método de remuestreo (Bootstrap) del pico máximo de ingresos explicado por la edad
+    6. Relación entre la edad y el logaritmo del salario de los valores observados y predichos por un modelo simple y uno complejo (con controles)
+    7. Predicción del perfil edad-ingreso por género
+    8. Brecha salarial de género por edad
+    9. Distribución de la edad de máximo ingreso por género (estimación por bootstrap)
