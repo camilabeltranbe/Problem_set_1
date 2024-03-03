@@ -22,12 +22,6 @@ ifelse(getwd()=="/Users/camilabeltran",
        wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
        wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1/")
 
-
-##NO FUNCIONA###
-#IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
-setwd(paste0(wd,"/stores"))
-load("05_Predicting_Earnings.R")
-
 #A continuación, encontrarán el código realizado para llegar a los resultados que se encuentran cargados en la imagen:
 
 #cargar la base de datos a través de image 
@@ -351,6 +345,11 @@ scores<- data.frame( Model= c(1, 2, 3, 4, 5, 6, 7, 8, 9),
 
 scores
 
+#Guardemos la tabla
+setwd(paste0(wd,"/views"))
+write.table(scores, "scores_todos_los_modelos.txt", sep = "\t", row.names = FALSE)
+
+
 #Grafiquemos ambos approaches
 RMSE_vsa= c(score1a, score2a, score3a, score4a, score5a, score6a, score7a, score8a, score9a)
 RMSE_kfold= c(score1b, score2b, score3b, score4b, score5b, score6b, score7b, score8b, score9b)
@@ -359,9 +358,14 @@ scores<- data.frame( Model= rep(c(1, 2, 3, 4, 5, 6, 7, 8, 9),2),
                      Approach= c(rep("Validation",9),rep("K-Fold",9)),
                      RMSE= c(RMSE_vsa, RMSE_kfold))
 
-ggplot(scores, ) + 
-  geom_line(aes(x=Model,y=RMSE,col=Approach), size=0.5)+
-  theme_bw() 
+ggplot(scores, aes(x = Model, y = RMSE, col = Approach)) +
+  geom_line(size = 0.5) +
+  labs(x = "Modelo",
+       y = "RMSE") +
+  scale_color_manual(name = "Enfoque", values = c("Validation" = "turquoise4", "K-Fold" = "lightsalmon")) +
+  theme_minimal()
+
+
 }
 
 #- c | Errores de predicción --------------------------------------------------------------
@@ -373,9 +377,6 @@ ggplot(scores, ) +
 #¿Son estos valores atípicos personas potenciales que la DIAN debería investigar o son simplemente el producto de 
 #un modelo defectuoso?
   
-#revisar script andres leverage (penultima clase)  
-  
-  
 #Hacemos un rápido chequeo para ver cuál es el modelo con el error de predicción más bajo
 indice_min_k <- which.min(RMSE_kfold) 
 indice_min_v <- which.min(RMSE_vsa)
@@ -383,7 +384,137 @@ indice_min_k
 indice_min_v
 #En ambos casos es el modelo 9
 
+#Calculemos los errores de predicción en la muestra de prueba
 
+#Primero volvemos a sacar las predicciones de nuestro modelo 9
+predictions <- predict(modelo9a, testing)
+predictions <- as.data.frame(predictions)
+
+## Hallamos el leverage 
+testing <- cbind(testing,predictions)
+testing <- rename(testing,leverage = predictions)
+
+
+## Errores de predicción
+testing <- testing %>% mutate(errores_pred= log_w - leverage)
+
+
+N <- nrow(testing)
+
+testing$id<- seq(1 , N)
+
+a<- ggplot(testing , aes(y = leverage , x = id , color= age, shape= as.factor(female) )) +
+  geom_point() + # add points
+  theme_bw() + #black and white theme
+  labs(x = "Observations",  
+       y = "Leverage",
+       title = "") # labels
+
+
+b<- ggplot(testing , aes(y = leverage , x = errores_pred  )) +
+  geom_point() + # add points
+  theme_bw() + #black and white theme
+  labs(x = "Errores de predicción",  
+       y = "Leverage",
+       title = "") # labels
+
+
+# Arrange the ggplot2 plots side by side using grid.arrange()
+grid.arrange(a, b, ncol = 2)
+
+#Examinemos la distribución de los errores de predicción
+##boxplot
+
+ggplot(data= testing, 
+       mapping = aes(y=errores_pred, x="")) +
+  theme_bw() +
+  geom_boxplot()  +
+  ggtitle("")+
+  ylab("Errores de predicción")+
+  xlab("")
+
+#Grafiquemos también la densidad de la distribución
+ggplot(data = testing, aes(x = errores_pred)) +
+  geom_density(fill = "turquoise4", alpha = 0.8, color = NA) +
+  labs(title = "",
+       x = "Errores de Predicción",
+       y = "Densidad") +
+  theme_minimal() +
+  theme(plot.background = element_rect(fill = "white"))
+
+#Identifiquemos los outliers que se encuentren en los extremos de la distribución del error de predicción
+
+#Primera definición: cuantiles
+
+low <- quantile(testing$errores_pred, 0.01)
+up <- quantile(testing$errores_pred, 0.99)
+low
+up
+
+
+b<-ggplot(data= testing, 
+          mapping = aes(y=errores_pred, x="")) +
+  theme_bw() +
+  geom_boxplot()  +
+  ggtitle("Outliers basados en cuantiles")+
+  labs(title = "Panel A: Outliers basados en cuantiles") +
+  ylab("Errores de Predicción")+
+  xlab("")
+
+
+b <- b + geom_hline(yintercept = low,linetype="solid",color="cyan4",linewidth=0.7) +
+  geom_hline(yintercept = up,linetype="solid",color="cyan4",linewidth=0.7)
+
+
+# Revisemos cuántas observaciones hay por debajo de low
+observaciones_por_debajo_1 <- sum(testing$errores_pred < low)
+
+# Revisemos cuántas observaciones hay por encima de up
+observaciones_por_encima_1 <- sum(testing$errores_pred > up)
+
+# Mostrar el número de observaciones por debajo de low y por encima de up
+observaciones_por_debajo_1
+observaciones_por_encima_1
+
+#50 en ambos extremos
+
+
+##Segunda definición: desviaciones estándar
+c<-ggplot(data= testing, 
+          mapping = aes(y=errores_pred, x="")) +
+  theme_bw() +
+  geom_boxplot()  +
+  ggtitle("")+
+  labs(title = "Panel B: Outliers basados en desviación estándar") +
+  ylab("Errores de Predicción")+
+  xlab("")
+
+low <- mean(testing$errores_pred) - 2* sd(testing$errores_pred)
+up <- mean(testing$errores_pred) + 2* sd(testing$errores_pred)
+
+c <- c + geom_hline(yintercept = low,linetype="solid",color="chocolate1",size=0.7) +
+  geom_hline(yintercept = up,linetype="solid",color="chocolate1",size=0.7)
+
+#Miremos ambas definiciones juntas
+grid.arrange(b, c, ncol = 2)
+
+# Revisemos cuántas observaciones hay por debajo de low
+observaciones_por_debajo_2 <- sum(testing$errores_pred < low)
+
+# Revisemos cuántas observaciones hay por encima de up
+observaciones_por_encima_2 <- sum(testing$errores_pred > up)
+
+# Mostrar el número de observaciones por debajo de low y por encima de up
+observaciones_por_debajo_2
+observaciones_por_encima_2
+
+#152 por debajo y 103 por encima
+
+
+#¿Son estos valores atípicos personas potenciales que la DIAN debería investigar o son simplemente el producto de 
+#un modelo defectuoso?
+
+#Los investigados por la DIAN serían los underreporters de su ingreso del Panel A, es decir, los outliers por debajo del 1%
 
 }
 
@@ -409,8 +540,13 @@ indice_segundo_min_v
 
 ### Validación LOOCV ###
 
+#Primero paralelicemos para evitar tanto tiempo
+num_cores <- detectCores()  # Detecta automáticamente la cantidad de núcleos de CPU
+registerDoParallel(num_cores)
+
 control <- trainControl(
-  method = "LOOCV") ## input the method Leave One Out Cross Validation
+  method = "LOOCV",## input the method Leave One Out Cross Validation
+  allowParallel = TRUE) #paraleliza
 
 
 #Modelo 9
