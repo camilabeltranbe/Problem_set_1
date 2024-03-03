@@ -15,8 +15,6 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        boot,
        ggpubr) ## bootstrapping
 
-
-
 #cambiar esta ruta por el directorio de cada uno
 
 ifelse(getwd()=="/Users/camilabeltran",
@@ -305,5 +303,5 @@ box_plot
 
 }
 
-save.image("data.R")
+save.image("data.RData")
 
