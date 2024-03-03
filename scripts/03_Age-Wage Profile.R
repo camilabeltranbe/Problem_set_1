@@ -14,7 +14,8 @@ p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
        readxl, # importar Excel
        writexl, # exportar Excel
        boot,
-       WVPlots) ## bootstrapping
+       WVPlots,
+       patchwork) ## bootstrapping
 getwd()
 
 ## Cambiar esta ruta por el directorio de cada uno
@@ -67,7 +68,7 @@ Peak_age_fun <- function(age_1, age_2) {
                                       }
 
 Peak_age_mod_simple <- Peak_age_fun(age_1 = model_Age_wage$coefficients[2],age_2 = model_Age_wage$coefficients[3]) #Modelo 1 (46 años)
-Peak_age_mod_ <- Peak_age_fun(age_1 = model_Age_wage_cont$coefficients[2],age_2 = model_Age_wage_cont$coefficients[3]) #Modelo 2 (60 años)
+Peak_age_mod_cont <- Peak_age_fun(age_1 = model_Age_wage_cont$coefficients[2],age_2 = model_Age_wage_cont$coefficients[3]) #Modelo 2 (60 años)
 
 
   # Realiza predicciones con el modelo
@@ -99,6 +100,7 @@ err2_cont <- err_cont^2
 }
 
 #### 3. Bootstrap estimation ----
+## Modelo Simple
 {
 #Intervalos de confianza con bootstrap
 Age_Wage_Profile_fn<-function(data,index){
@@ -114,22 +116,84 @@ Age_Wage_Profile_fn(data_tibble,1:nrow(data_tibble))
 
 #Se utiliza la funcion boot para estimar la regresion con bootstrap
 set.seed(5382)
-boot_results03 <- boot(data_tibble, Age_Wage_Profile_fn, R = 1000)
-boot_results03 <- as.data.frame(boot_results03$t)
-hist(boot_results03$V1) #distribucion del valor maximo de la edad con bootstrap
-quantile(boot_results03$V1,0.025) #percentil 2.5 (47.16848)
-quantile(boot_results03$V1,0.975) #percentil 97.5 (49.35956)
+boot_results_mod_simple <- boot(data_tibble, Age_Wage_Profile_fn, R = 1000)
+Dist_Peak_age_mod_simple <- as.data.frame(boot_results_mod_simple$t)
+hist(Dist_Peak_age_mod_simple$V1) #distribucion del valor maximo de la edad con bootstrap
+
+## Histograma - Modelo Simple
+Hist_mod_simp <- ggplot(Dist_Peak_age_mod_simple, aes(x = V1)) +
+  geom_histogram(bins = 50, color = "white", fill = "#528B8B") +
+  labs(x ='Edad', y='Frecuencia', title = "Panel A: Modelo simple")+
+  geom_vline(aes(xintercept = Peak_age_mod_simple), color = "mistyrose", linewidth = 1)+
+  theme_minimal()
+Hist_mod_simp
+
+quantile(Dist_Peak_age_mod_simple$V1,0.025) #percentil 2.5 (47.16848)
+quantile(Dist_Peak_age_mod_simple$V1,0.975) #percentil 97.5 (49.35956)
 
 
 Age_wage_P_plot <- ggplot(data_tibble, aes(x = age, y = log_w)) +
   geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
   geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
-  scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue"),name="") +  # Colores de puntos y líneas
-  labs(title = "Perfil edad-ingreso: Bogotá",
+  scale_color_manual(values = c("Real" = "mistyrose", "Predicho" = "#528B8B"),name="") +  # Colores de puntos y líneas
+  labs(title = "Panel A: Modelo simple",
        x = "Edad",
-       y = "Ln(salario)") +
+       y = "Ln(Salario)") +
   theme_minimal()
 print(Age_wage_P_plot)
+
 }
+
+## Modelo Complejo
+{
+  #Intervalos de confianza con bootstrap
+  Age_Wage_Profile_mod_comp<-function(data,index){
+    f <- lm(log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + estrato1_factor + sizeFirm_factor, data = data_tibble, subset = index)
+    b1 <- f$coefficients[2]
+    b2 <- f$coefficients[3]
+    max_edad <- -(b1)/(2*b2)
+    return(max_edad)
+  }
+  
+  #Verifiquemos que la función... funciona!
+  Age_Wage_Profile_mod_comp(data_tibble,1:nrow(data_tibble))
+  
+  #Se utiliza la funcion boot para estimar la regresion con bootstrap
+  set.seed(5382)
+  boot_results_mod_cont <- boot(data_tibble, Age_Wage_Profile_mod_comp, R = 1000)
+  Dist_Peak_age_mod_cont <- as.data.frame(boot_results_mod_cont$t)
+  hist(Dist_Peak_age_mod_cont$V1) #distribucion del valor maximo de la edad con bootstrap
+  
+  ## Histograma - Modelo Simple
+  Hist_mod_cont <- ggplot(Dist_Peak_age_mod_cont, aes(x = V1)) +
+    geom_histogram(bins = 50, color = "white", fill = "steelblue") +
+    labs(x ='Edad', y='Frecuencia', title = "Panel B: Modelo con controles")+
+    geom_vline(aes(xintercept = Peak_age_mod_cont), color = "seashell3", linewidth = 1)+
+    theme_minimal()
+  Hist_mod_cont
+  
+  quantile(Dist_Peak_age_mod_cont$V1,0.025) #percentil 2.5 (47.16848)
+  quantile(Dist_Peak_age_mod_cont$V1,0.975) #percentil 97.5 (49.35956)
+  
+  
+  Age_wage_P_plot_cont <- ggplot(data_tibble, aes(x = age, y = log_w)) +
+    geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
+    geom_line(aes(y = predicted_cont, color = "Predicho"), linewidth = 0.8) +  # Línea para valores predichos
+    scale_color_manual(values = c("Real" = "seashell3", "Predicho" = "steelblue"),name="") +  # Colores de puntos y líneas
+    labs(title = "Panel B: Modelo con controles",
+         x = "Edad",
+         y = "Ln(Salario)") +
+    theme_minimal()
+  print(Age_wage_P_plot_cont)
+}
+
+### Panel 1
+Hist_mod_simp + Hist_mod_cont
+
+### Panel 2
+Age_wage_P_plot + Age_wage_P_plot_cont
+# Volvemos al estado original
+par(mfrow = c(1, 1))
+
 
 save.image("03_Age-Wage Profile.R")
