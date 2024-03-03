@@ -42,7 +42,8 @@ view(head(data_tibble))
   data_tibble<- data_tibble %>% 
     select(directorio, secuencia_p, orden, estrato1, sex, age, ocu, oficio, orden, totalHoursWorked,
            ie , formal, informal, sizeFirm , regSalud, maxEducLevel, ingtot,
-           ingtotes,ingtotob, y_salary_m, y_total_m, hoursWorkUsual, experiencia=p6426, Jefe_h = p6050) 
+           ingtotes,ingtotob, y_salary_m, y_total_m, hoursWorkUsual, experiencia=p6426, 
+           Jefe_h = p6050, Autoempleado = cuentaPropia) 
   #view(head(data_tibble))
   # Se eliminaron 157 variables de la muestra inicial, dejando la nueva muestra con 21 variables.
 }
@@ -122,7 +123,7 @@ view(head(data_tibble))
   data_tibble <- data_tibble %>%
     filter(!is.na(maxEducLevel))
 
-  ## Arreglamos variable jefe de hogar 
+  ## Arreglamos variable jefe de hogar para que solo tome el valor de 1 cuando la persona es jefe de hogar
   data_tibble$Jefe_h <- ifelse(data_tibble$Jefe_h==1,1,0)
     
 }

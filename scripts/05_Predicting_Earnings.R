@@ -144,9 +144,9 @@ score4a
 
 ### Especificaciones adicionales ###
 
-#Modelo 5 -> agregamos experiencia y horas trabajadas al cuadrado
+#Modelo 5 -> agregamos experiencia, horas trabajadas al cuadrado y una interacción entre female y jefe de hogar
 forma_5<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + hoursWorkUsual + 
-  estrato1_factor + sizeFirm_factor + experiencia + hoursWorkUsual^2
+  estrato1_factor + sizeFirm_factor + experiencia + hoursWorkUsual^2 + female:Jefe_h + female:experiencia + female:Autoempleado
 
 modelo5a <- lm(forma_5,
                data = training)
@@ -157,9 +157,9 @@ predictions <- predict(modelo5a, testing)
 score5a<- RMSE(predictions, testing$log_w )
 score5a 
 
-#Modelo 6 -> quitamos informal, size firm factor y agregamos experiencia y experiencia al cuadrado
+#Modelo 6 -> quitamos informal, size firm factor y agregamos experiencia, experiencia al cuadrado, una interacción entre female y jefe de hogar, autoempleado y una interacción entre female y autoempleado
 forma_6<- log_w ~ age + age2 + female + oficio_factor + maxEducLevel_factor + hoursWorkUsual + 
-  estrato1_factor + experiencia + experiencia^2
+  estrato1_factor + experiencia + experiencia^2 + female:Jefe_h + Autoempleado + female:Autoempleado
 
 modelo6a <- lm(forma_6,
                data = training)
@@ -173,7 +173,7 @@ score6a
 #Modelo 7 -> agregamos experiencia, experiencia al cuadrado, experiencia al cubo, hours work usual al cuadrado y el logaritmo de la edad
 forma_7<- log_w ~ age + age2 + female + informal + oficio_factor + maxEducLevel_factor + 
   hoursWorkUsual + estrato1_factor + sizeFirm_factor + experiencia + experiencia^2 + experiencia^3  + hoursWorkUsual^2 +
-  log(age)
+  log(age) + Jefe_h
 
 modelo7a <- lm(forma_7,
                data = training)
@@ -199,7 +199,7 @@ score8a
 
 #Modelo 9 ->  quitamos female, informal, hoursWorkUsual y agregamos el logaritmo de hoursWorkUsual, experiencia al cubo y el log de edad
 forma_9<- log_w ~ age + age2 + oficio_factor + maxEducLevel_factor + 
-  estrato1_factor + sizeFirm_factor + log(hoursWorkUsual) + experiencia^3 + log(age)
+  estrato1_factor + sizeFirm_factor + log(hoursWorkUsual) + experiencia^3 + log(age) + female:Jefe_h + Autoempleado
 
 modelo9a <- lm(forma_9,
                data = training)
@@ -379,7 +379,9 @@ ggplot(scores, ) +
 #Hacemos un rápido chequeo para ver cuál es el modelo con el error de predicción más bajo
 indice_min_k <- which.min(RMSE_kfold) 
 indice_min_v <- which.min(RMSE_vsa)
-#En ambos casos es el modelo 8  
+indice_min_k
+indice_min_v
+#En ambos casos es el modelo 9
 
 
 
@@ -399,18 +401,11 @@ RMSE_vsa_sin_min <- RMSE_vsa[-indice_min_v]
 # Encontrar el índice del segundo mínimo valor 
 indice_segundo_min_k <- which.min(RMSE_kfold_sin_min)
 indice_segundo_min_v <- which.min(RMSE_vsa_sin_min)
+indice_segundo_min_k
+indice_segundo_min_v
+#En ambos casos es el modelo 5
 
-indice_segundo_min_k_ajustado <- ifelse(indice_segundo_min_k>=8,9,indice_segundo_min_k)
-indice_segundo_min_v_ajustado <- ifelse(indice_segundo_min_v>=8,9,indice_segundo_min_v)
-
-indice_segundo_min_k_ajustado
-indice_segundo_min_v_ajustado
-
-#Podemos ver que para el k fold cross validation es el modelo 7 para la primera validación es el modelo 9
-#Revisemos cuál es menor
-score7b<score9a
-
-#Nos quedamos como segundo menor con el modelo 7
+#De esta manera, en esta subsección vamos a trabajar con los modelos 9 y 5
 
 ### Validación LOOCV ###
 
@@ -418,32 +413,56 @@ control <- trainControl(
   method = "LOOCV") ## input the method Leave One Out Cross Validation
 
 
-#Modelo 8
-modelo8c <- train(forma_8,
+#Modelo 9
+modelo9c <- train(forma_9,
                   data = data_tibble,
                   method = 'lm', 
                   trControl= control)
-modelo8c
+modelo9c
 
 #Podemos obtener la predicción en cada iteración (observación) usando
-head(modelo8c$pred)
+head(modelo9c$pred)
 
 #Guardamos el RMSE
-score8c<-RMSE(modelo8c$pred$pred, data_tibble$log_w)
+score9c<-RMSE(modelo9c$pred$pred, data_tibble$log_w)
 
 
-#Modelo 7
-modelo7c <- train(forma_7,
+#Modelo 5
+modelo5c <- train(forma_5,
                   data = data_tibble,
                   method = 'lm', 
                   trControl= control)
-modelo7c
+modelo5c
 
 #Podemos obtener la predicción en cada iteración (observación) usando
-head(modelo7c$pred)
+head(modelo5c$pred)
 
 #Guardamos el RMSE
-score7c<-RMSE(modelo7c$pred$pred, data_tibble$log_w)
+score5c<-RMSE(modelo5c$pred$pred, data_tibble$log_w)
+
+#Compare los resultados del error de prueba con los obtenidos con el 
+#enfoque del conjunto de validación y explore los vínculos potenciales con la estadística de influencia.
+
+### Comparación ###
+scores_modelos_menor_error<- data.frame( Model= c(5, 9),
+                                         RMSE_vsa= c(score5a, score9a),
+                                         RMSE_kfold= c(score5b, score9b),
+                                         RMSE_loocv= c(score5c, score9c))
+
+scores_modelos_menor_error
+
+#Grafiquemos los tres approaches
+RMSE_vsa= c(score5a, score9a)
+RMSE_kfold= c(score5b, score9b)
+RMSE_loocv= c(score5c, score9c)
+
+scores_modelos_menor_error<- data.frame( Model= rep(c(5, 9),3),
+                     Approach= c(rep("Validation",2),rep("K-Fold",2),rep("LOOCV",2)),
+                     RMSE= c(RMSE_vsa, RMSE_kfold, RMSE_loocv))
+
+ggplot(scores_modelos_menor_error, ) + 
+  geom_line(aes(x=Model,y=RMSE,col=Approach), size=0.5)+
+  theme_bw() 
 
 }
 
