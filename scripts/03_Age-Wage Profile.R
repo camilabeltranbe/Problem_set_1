@@ -198,4 +198,4 @@ Age_wage_P_plot + Age_wage_P_plot_cont
 par(mfrow = c(1, 1))
 
 
-save.image("03_Age-Wage Profile.RData")
+save.image("03_age_wage_profile.RData")
