@@ -303,5 +303,5 @@ box_plot
 
 }
 
-save.image("data.RData")
+save.image("02_data.RData")
 
