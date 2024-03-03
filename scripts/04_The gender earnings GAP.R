@@ -27,12 +27,12 @@ wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Lear
 
 #IMPORTANTE: Todos los resultados, variables y gráficos se encuentran alojados en la siguiente imagen, para cargarla:
 setwd(paste0(wd,"/stores"))
-load("gender_gap_earnings.R")
+load("gender_gap_earnings.RData")
 
 #A continuación, encontrarán el código realizado para llegar a los resultados que se encuentran cargados en la imagen:
 
 #cargar la base de datos a través de image 
-load("03_Age-Wage Profile.R")
+load("02_data.RData")
 
 ####################### a) Regresión ######################################
 {
@@ -117,7 +117,7 @@ quantile(boot_rf$V1,0.975) #percentil 97.5 (44.71811)
 female_plot <- ggplot(female_data_tibble, aes(x = age, y = log_w)) +
                 geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
                 geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
-                scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkblue"),name="") +  # Colores de puntos y líneas
+                scale_color_manual(values = c("Real" = "seashell3", "Predicho" = "steelblue"),name="") +  # Colores de puntos y líneas
                 labs(title = "Panel B: Mujeres",
                      x = "Edad",
                      y = "Ln(salario)") +
@@ -155,15 +155,15 @@ quantile(boot_rm$V1,0.975) #percentil 97.5 (53.45359)
 male_plot <- ggplot(male_data_tibble, aes(x = age, y = log_w)) +
               geom_point(aes(color = "Real"), alpha = 0.5) +  # Puntos para valores reales
               geom_line(aes(y = predicted, color = "Predicho"), linewidth = 1) +  # Línea para valores predichos
-              scale_color_manual(values = c("Real" = "gray", "Predicho" = "darkred"),name="") +  # Colores de puntos y líneas
+              scale_color_manual(values = c("Real" = "mistyrose", "Predicho" = "#528B8B"),name="") +  # Colores de puntos y líneas
               labs(title = "Panel A: Hombres",
                    x = "Edad",
-                   y = "Ln(salario)") +
+                   y = "Ln(Salario)") +
               theme_minimal()
 print(male_plot)
 male_female_plot <- grid.arrange(male_plot, female_plot, ncol = 2)
-
 print(male_female_plot)
+
 #plot de perfil edad - ingreso por sexo
 predicted_data <- rbind(female_data_tibble,male_data_tibble)
 predicted_data$sex <- factor(predicted_data$sex, levels = c(0, 1), labels = c("Mujeres", "Hombres"))
@@ -172,37 +172,30 @@ predicted_data$sex <- factor(predicted_data$sex, levels = c(0, 1), labels = c("M
 gender_plot <- ggplot(predicted_data, aes(x = age, y = predicted, color = sex)) +
                 geom_line() +  # Líneas continuas
                 labs(x = "Edad",
-                     y = "Ln(salario)") +
+                     y = "Ln(Salario)") +
                 theme_test()+
                 theme(legend.position = "top")+  # Mueve la leyenda arriba
-                scale_color_manual(values = c("Mujeres" = "darkblue", "Hombres" = "darkred"),name="") # Cambiar colores de las líneas
+                scale_color_manual(values = c("Mujeres" = "steelblue", "Hombres" = "#528B8B"),name="") + # Cambiar colores de las líneas
+                theme_minimal()
 print(gender_plot)
 
-#Plot de distribucion de edad de ingreso maximo con bootstrap
-par(mfrow = c(1, 2))  # Divide el área de trazado en 1 fila y 2 columnas
+# Plot de distribucion de edad de ingreso maximo con bootstrap
+hist_bootrm <- ggplot(boot_rm, aes(x = V1)) +
+  geom_histogram(bins = 50, color = "white", fill = "#528B8B") +
+  labs(x ='Edad', y='Frecuencia', title = "Panel A: Hombres")+
+  geom_vline(aes(xintercept = 51.56067), color = "seashell3", linewidth = 1)+
+  theme_minimal()
+hist_bootrm
 
-# Histograma para boot_rf$V1 (Panel A)
-hist(boot_rm$V1, main = "", ylab = "Frecuencia", xlab = "Edad de ingreso máximo")
-abline(v = 51.56067, col = "darkred", lty = 2)
-mtext("Panel A: Hombres", side = 3, line = 2)  # Agrega etiqueta para Panel A
+hist_bootrf<- ggplot(boot_rf, aes(x = V1)) +
+  geom_histogram(bins = 50, color = "white", fill = "steelblue") +
+  labs(x ='Edad', y='Frecuencia', title = "Panel B: Mujeres")+
+  geom_vline(aes(xintercept =43.59954), color = "seashell3", linewidth = 1)+
+  theme_minimal()
+hist_bootrf
 
-# Histograma para boot_rm$V1 (Panel B)
-hist(boot_rf$V1, main = "", ylab = "Frecuencia", xlab = "Edad de ingreso máximo")
-abline(v = 43.59954, col = "darkblue", lty = 2)
-mtext("Panel B: Mujeres", side = 3, line = 2)  # Agrega etiqueta para Panel B
-
-# Guardar el gráfico combinado en un objeto
-peak_age_gender_plot <- recordPlot()
-
-# Restaurar el diseño de la cuadrícula original
-par(mfrow = c(1, 1))
-
-#Guardar los graficos
-setwd(paste0(wd,"/Views"))
-ggsave("age_wage_profile_hombres.png", male_plot, width = 10, height = 6, units = "in")
-ggsave("age_wage_profile_mujeres.png", female_plot, width = 10, height = 6, units = "in")
-ggsave("age_wage_profile_gender.png", gender_plot, width = 10, height = 6, units = "in")
+male_female_hist <- grid.arrange(hist_bootrm, hist_bootrf, ncol = 2)
 }
-setwd(paste0(wd,"/Stores"))
 
-save.image("gender_gap_earnings.R")
+setwd(paste0(wd,"/stores"))
+save.image("04_gender_gap_earnings.RData")
