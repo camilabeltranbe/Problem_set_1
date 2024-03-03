@@ -465,6 +465,19 @@ ggplot(scores_modelos_menor_error, ) +
   theme_bw() 
 
 }
+ggplot(scores_modelos_menor_error, ) + 
+  geom_line(aes(x=Model,y=RMSE,col=Approach), size=0.5)+
+  theme_bw() 
 
+ggplot(scores_modelos_menor_error, aes(x = Model, y = RMSE, col = Approach)) +
+  geom_line(size = 0.5) +
+  labs(x = "Modelo",
+       y = "RMSE") +
+  scale_color_manual(name = "Enfoque", values = c("Validation" = "darkblue", "K-Fold" = "darkred", "LOOCV" = "darkgreen")) +
+  theme_minimal()
 
-save.image("05_predicting_earnings.R")
+setwd(paste0(wd,"/views"))
+write.table(scores_modelos_menor_error, "scores_modelos_menor_error.txt", sep = "\t", row.names = FALSE)
+
+#setwd(paste0(wd,"/stores"))
+#save.image("05_predicting_earnings.RData")
