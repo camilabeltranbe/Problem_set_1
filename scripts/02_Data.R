@@ -27,6 +27,7 @@ ifelse(getwd()=="/Users/camilabeltran",
        wd <- "C:/Users/Juan/Documents/Problem_set_1",
        wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1")))
 
+wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1"
 setwd(paste0(wd,"/stores"))
 #Cargar datos a partir de 0_1_web_scraping###
 load("data_GEIH.RData")
