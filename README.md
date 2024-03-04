@@ -10,11 +10,7 @@ Este repositorio almacena toda la información utilizada para la solución del p
 
 * `document`: En esta carpeta está el documento final en  _.pdf_, dado que el trabajo se realizó en grupo, decidimos utilizar el compilador de texto en línea _overleaf_. Por lo tanto, este repositorio no permite la reproducibilidad del documento final. 
 * `scripts`: En esta carpeta están los _scripts_ utilizados para generar los resultados. 
-  * `00_main_script`: Contiene el código principal, se determina el directorio de trabajo y llama a los otros scripts. Para su reproducibilidad es importante determinar la ruta de trabajo. Por ejemplo: 
-    ```
-    wd <- mi_ruta/Problem_set_1
-    ```
-    Luego de determinar la ruta, se puede correr el código desde la linea 17.
+  * `00_main_script`: Contiene el código principal, se determina el directorio de trabajo, se cargan los paquetes necesarios y llama a los otros scripts. Para su reproducibilidad es importante determinar la ruta de trabajo. En la línea 37 puede cambiar "otro_directorio" por la ruta en donde replico el repositorio.
   * `01_web_scraping`: Este código realiza _web scraping_ de la [página web](https://ignaciomsarmiento.github.io/GEIH2018_sample/) del profesor Ignacio Sarmiento, para la adquisición de los datos. Además, guarda la base de datos en formato _.RData_ en la carpeta de `stores`.
   * `02_data`: Este código realiza la limpieza de la base de datos, mantiene las variables de interés, realiza imputación de datos y estadísticas descriptivas. Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
   * `03_age_wage_profile`: Este código realiza las estimaciones de la sección 3 del problem set (teoría edad-salario). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.

@@ -374,34 +374,32 @@ final.</p></li>
 <li><p><code>scripts</code>: En esta carpeta están los <em>scripts</em>
 utilizados para generar los resultados.</p>
 <ul>
-<li><p><code>00_main_script</code>: Contiene el código principal, se
-determina el directorio de trabajo y llama a los otros scripts. Para su
-reproducibilidad es importante determinar la ruta de trabajo. Por
-ejemplo:</p>
-<pre><code>wd &lt;- mi_ruta/Problem_set_1</code></pre>
-<p>Luego de determinar la ruta, se puede correr el código desde la linea
-17.</p></li>
-<li><p><code>01_web_scraping</code>: Este código realiza <em>web
+<li><code>00_main_script</code>: Contiene el código principal, se
+determina el directorio de trabajo, se cargan los paquetes necesarios y
+llama a los otros scripts. Para su reproducibilidad es importante
+determinar la ruta de trabajo. En la línea 37 puede cambiar
+“otro_directorio” por la ruta en donde replico el repositorio.</li>
+<li><code>01_web_scraping</code>: Este código realiza <em>web
 scraping</em> de la <a href="https://ignaciomsarmiento.github.io/GEIH2018_sample/">página
 web</a> del profesor Ignacio Sarmiento, para la adquisición de los
 datos. Además, guarda la base de datos en formato <em>.RData</em> en la
-carpeta de <code>stores</code>.</p></li>
-<li><p><code>02_data</code>: Este código realiza la limpieza de la base
-de datos, mantiene las variables de interés, realiza imputación de datos
-y estadísticas descriptivas. Además, guarda los resultados en formato
-<em>.RData</em> en la carpeta de <code>stores</code>.</p></li>
-<li><p><code>03_age_wage_profile</code>: Este código realiza las
+carpeta de <code>stores</code>.</li>
+<li><code>02_data</code>: Este código realiza la limpieza de la base de
+datos, mantiene las variables de interés, realiza imputación de datos y
+estadísticas descriptivas. Además, guarda los resultados en formato
+<em>.RData</em> en la carpeta de <code>stores</code>.</li>
+<li><code>03_age_wage_profile</code>: Este código realiza las
 estimaciones de la sección 3 del problem set (teoría edad-salario).
 Además, guarda los resultados en formato <em>.RData</em> en la carpeta
-de <code>stores</code>.</p></li>
-<li><p><code>04_gender_earnings_gap</code>: Este código realiza las
+de <code>stores</code>.</li>
+<li><code>04_gender_earnings_gap</code>: Este código realiza las
 estimaciones de la sección 4 del problem set (brecha salarial por
 género). Además, guarda los resultados en formato <em>.RData</em> en la
-carpeta de <code>stores</code>.</p></li>
-<li><p><code>05_predicting_earnings</code>: Este código realiza las
+carpeta de <code>stores</code>.</li>
+<li><code>05_predicting_earnings</code>: Este código realiza las
 estimaciones de la sección 5 del problem set (predicciones de ingreso).
 Además, guarda los resultados en formato <em>.RData</em> en la carpeta
-de <code>stores</code>.</p></li>
+de <code>stores</code>.</li>
 </ul></li>
 <li><p><code>stores</code>: En esta carpeta están la base de datos
 completa de la página web y los resultados de cada script en formato

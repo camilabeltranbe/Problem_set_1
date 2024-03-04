@@ -2,38 +2,14 @@
 ########### Punto 2 -Problem set 1 ################
 #################################################
 
-{
-rm(list = ls()) #se borra la memoria
-library(pacman) 
-p_load(tidyverse, # tidy-data (ggplot y Tidyverse)
-       skimr, # summary data
-       visdat, ## visualizing missing data
-       corrplot, ## Correlation Plots 
-       stargazer, # tables/output to TEX.
-       readxl, # importar Excel
-       writexl, # exportar Excel
-       boot,
-       ggpubr) ## bootstrapping
-
-#cambiar esta ruta por el directorio de cada uno
-
-ifelse(getwd()=="/Users/camilabeltran",
-       wd <- "/Users/camilabeltran/OneDrive/Educación/PEG - Uniandes/BDML/GitHub/problem_set/Problem_set_1",
-       ifelse(getwd()=="/User/OneDrive - Universidad de los andes",
-       wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1",
-       ifelse(getwd()=="C:/Users/Juan/",
-       wd <- "C:/Users/Juan/Documents/Problem_set_1",
-       wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1")))
-
-wd <- "C:/Users/User/OneDrive - Universidad de los andes/Big Data y Machine Learning/Problem_set_1/Problem_set_1"
-setwd(paste0(wd,"/stores"))
 #Cargar datos a partir de 0_1_web_scraping###
-load("data_GEIH.RData")
+#setwd(paste0(wd,"/stores"))
+#load("01_data_GEIH.RData")
 
 ## Cambio de formato a Tibble   
 data_tibble <- as_tibble(data) 
 view(head(data_tibble))
-}
+
 ########## Selección de variables e imputación de Missing values ##########
 {
   ## a. Seleccion de variables
@@ -303,5 +279,6 @@ box_plot
 
 }
 
+#guardar resultados en .RData
+setwd(paste0(wd,"/stores"))
 save.image("02_data.RData")
-
