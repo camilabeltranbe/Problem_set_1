@@ -1,0 +1,12 @@
+\begin{table}[H] 
+\centering 
+  \caption{Estimación por bootstrap de la brecha salarial por género con controles} 
+  \label{tab:boot_gender_gap} 
+\begin{tabular}{@{\extracolsep{5pt}}lcc} 
+\hline \hline 
+Coeficiente & Sesgo & Error Estándar\\ 
+\hline \\[-1.8ex] 
+ Edad & 0.048 & 0.049 \\ 
+\hline \hline
+\end{tabular} 
+\end{table} 
