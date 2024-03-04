@@ -5,23 +5,23 @@
 rm(list = ls())
 #se cargan los paquetes
 library(pacman)
-p_load(rio, # import/export data
-       tidyverse, # tidy-data (ggplot y Tidyverse)
-       skimr, # summary data
-       visdat, # visualizing missing data
-       corrplot, # Correlation Plots 
-       stargazer, # tables/output to TEX.
+p_load(rio, # importación/exportación de datos
+       tidyverse, # datos ordenados (ggplot y Tidyverse)
+       skimr, # datos de resumen
+       visdat, # visualización de datos faltantes
+       corrplot, # gráficos de correlación
+       stargazer, # tablas/salida a TEX.
        rvest, # web-scraping
-       readxl, # Importar Excel
-       writexl, # Exportar Excel
+       readxl, # importar Excel
+       writexl, # exportar Excel
        boot, # bootstrapping
-       ggpubr, # ggplot2 extensions
-       WVPlots, # Weighted Variable Plots
-       patchwork, # Para combinar gráficos
-       gridExtra, # Para combinar gráficos
-       ggplot2, # Gráficos
-       caret, # For predictive model assessment
-       data.table) # Para manipulación de datos
+       ggpubr, # extensiones de ggplot2
+       WVPlots, # gráficos de variables ponderadas
+       patchwork, # para combinar gráficos
+       gridExtra, # para combinar gráficos
+       ggplot2, # gráficos
+       caret, # para evaluación de modelos predictivos
+       data.table) # para manipulación de datos
 
 #se define la ruta de trabajo
 ifelse(grepl("camilabeltran", getwd()),
