@@ -280,4 +280,5 @@ box_plot
 }
 
 #guardar resultados en .RData
+setwd(paste0(wd,"/stores"))
 save.image("02_data.RData")

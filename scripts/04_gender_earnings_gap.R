@@ -174,5 +174,6 @@ hist_bootrf
 male_female_hist <- grid.arrange(hist_bootrm, hist_bootrf, ncol = 2)
 }
 
+#guardar resultados en .RData
 setwd(paste0(wd,"/stores"))
 save.image("04_gender_gap_earnings.RData")

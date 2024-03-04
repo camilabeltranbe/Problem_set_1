@@ -167,5 +167,6 @@ Age_wage_P_plot + Age_wage_P_plot_cont
 # Volvemos al estado original
 par(mfrow = c(1, 1))
 
-
+#guardar resultados en .RData
+setwd(paste0(wd,"/stores"))
 save.image("03_age_wage_profile.RData")
