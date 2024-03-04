@@ -36,16 +36,18 @@ ifelse(grepl("camilabeltran", getwd()),
                                    wd <- "/Users/aleja/Documents/Maestría Uniandes/Clases/Big Data y Machine Learning/Repositorios Git Hub/Problem_set_1)",
                                    wd <- "otro_directorio")))))
 
-#se establece la ruta de la carpeta de "scripts"
-setwd(paste0(wd,"/scripts"))
-
 #Script: "01_web_scraping.R". Realiza el proceso de web scraping para conseguir los datos
+setwd(paste0(wd,"/scripts"))
 source("01_web_scraping.R")
 #Script: "02_Data.R". Realiza la limpieza de la base de datoć y estadísticas descriptivas
+setwd(paste0(wd,"/scripts"))
 source("02_data.R")
 #Script: "03_Data.R". Realiza estimaciones del perfil edad-ingreso
+setwd(paste0(wd,"/scripts"))
 source("03_age_wage_profile.R")
 #Script: "04_The gender earnings GAP.R". Realiza estimaciones de la brecha salarial por género
+setwd(paste0(wd,"/scripts"))
 source("04_gender_earnings_gap.R")
 #Script: "05_Predicting_Earnings.R". Realiza predicciones y estimaciones de cross-validation
+setwd(paste0(wd,"/scripts"))
 source("05_predicting_earnings.R")

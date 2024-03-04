@@ -146,14 +146,15 @@ predicted_data$sex <- factor(predicted_data$sex, levels = c(0, 1), labels = c("M
 
 # Plot de prediccion por edad y sexo
 gender_plot <- ggplot(predicted_data, aes(x = age, y = predicted, color = sex)) +
-                geom_line() +  # Líneas continuas
-                labs(x = "Edad",
-                     y = "Ln(Salario)") +
-                theme_test()+
-                theme(legend.position = "top")+  # Mueve la leyenda arriba
-                scale_color_manual(values = c("Mujeres" = "steelblue", "Hombres" = "#528B8B"),name="") + # Cambiar colores de las líneas
-                theme_minimal()
+          geom_line(size = 1) +  # Líneas más gruesas
+          labs(x = "Edad",
+               y = "Ln(Salario)") +
+          theme_test() +
+          theme(legend.position = "top") +  # Mueve la leyenda arriba
+          scale_color_manual(values = c("Mujeres" = "steelblue", "Hombres" = "#528B8B"), name = "") + # Cambiar colores de las líneas
+          theme_minimal()
 print(gender_plot)
+
 
 # Plot de distribucion de edad de ingreso maximo con bootstrap
 hist_bootrm <- ggplot(boot_rm, aes(x = V1)) +
