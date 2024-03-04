@@ -397,9 +397,8 @@ estimaciones de la sección 4 del problem set (brecha salarial por
 género). Además, guarda los resultados en formato <em>.RData</em> en la
 carpeta de <code>stores</code>.</li>
 <li><code>05_predicting_earnings</code>: Este código realiza las
-estimaciones de la sección 5 del problem set (predicciones de ingreso).
-Además, guarda los resultados en formato <em>.RData</em> en la carpeta
-de <code>stores</code>.</li>
+estimaciones de la sección 5 del problem set (predicciones de
+ingreso).</li>
 </ul></li>
 <li><p><code>stores</code>: En esta carpeta están la base de datos
 completa de la página web y los resultados de cada script en formato
@@ -412,8 +411,6 @@ tardarse al implementar las metologias de <em>bootstrap</em> y
 <li>02_data.RData</li>
 <li>03_age_wage_profile.RData</li>
 <li>04_gender_gap_earnings.RData</li>
-<li>05_predicting_earnings.RData<br />
-</li>
 </ul></li>
 <li><p><code>views</code>: En esta carpeta están las tablas y figuras
 del documento final.</p>
@@ -422,9 +419,13 @@ del documento final.</p>
 <ol style="list-style-type: decimal">
 <li>Estadísticas descriptivas de las variables cuantitativas más
 relevantes</li>
-<li>Estimación Salario - Edad</li>
+<li>Estimación salario - edad</li>
 <li>Estimación de la brecha salarial por género</li>
+<li>Estimación por bootstrap de la brecha salarial por género con
+controles</li>
 <li>Estimación del perfil edad-ingreso por género</li>
+<li>RMSE para todos los modelos</li>
+<li>RMSE para modelos 5 y 9</li>
 </ol></li>
 <li><p><code>views/figures</code></p>
 <ol style="list-style-type: decimal">
@@ -445,6 +446,11 @@ controles)</li>
 <li>Brecha salarial de género por edad</li>
 <li>Distribución de la edad de máximo ingreso por género (estimación por
 bootstrap)</li>
+<li>RMSE de todas las especificaciones con K-fold y Validación</li>
+<li>Distribución de los errores de predicción</li>
+<li>Diagramas de caja de la distribución de los errores de
+predicción</li>
+<li>RMSE de modelos 5 y 9 con LOOCV, K-fold y Validación</li>
 </ol></li>
 </ul></li>
 </ul>

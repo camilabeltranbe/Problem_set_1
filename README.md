@@ -15,24 +15,27 @@ Este repositorio almacena toda la información utilizada para la solución del p
   * `02_data`: Este código realiza la limpieza de la base de datos, mantiene las variables de interés, realiza imputación de datos y estadísticas descriptivas. Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
   * `03_age_wage_profile`: Este código realiza las estimaciones de la sección 3 del problem set (teoría edad-salario). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
   * `04_gender_earnings_gap`: Este código realiza las estimaciones de la sección 4 del problem set (brecha salarial por género). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
-  * `05_predicting_earnings`: Este código realiza las estimaciones de la sección 5 del problem set (predicciones de ingreso). Además, guarda los resultados en formato _.RData_ en la carpeta de `stores`.
+  * `05_predicting_earnings`: Este código realiza las estimaciones de la sección 5 del problem set (predicciones de ingreso).
 * `stores`: En esta carpeta están la base de datos completa de la página web y los resultados de cada script en formato _.RData_. Los archivos _.RData_ tienen la facilidad de cargar los resultados sin tener que correr cada código, lo cual puede tardarse al implementar las metologias de _bootstrap_ y _loocv_.
   * 01_data_GEIH.RData
   * 02_data.RData
   * 03_age_wage_profile.RData
   * 04_gender_gap_earnings.RData
-  * 05_predicting_earnings.RData  
+  
 * `views`: En esta carpeta están las tablas y figuras del documento final.
 
   * `views/tables`
     
     1. Estadísticas descriptivas de las variables cuantitativas más relevantes
-    2. Estimación Salario - Edad
+    2. Estimación salario - edad
     3. Estimación de la brecha salarial por género
-    4. Estimación del perfil edad-ingreso por género   
-    
+    4. Estimación por bootstrap de la brecha salarial por género con controles
+    5. Estimación del perfil edad-ingreso por género
+    6. RMSE para todos los modelos
+    7. RMSE para modelos 5 y 9
+
   * `views/figures`
-  
+
     1. Proporción de missing values de las variables más representativas
     2. Distribución de Salarios por Género
     3. Frecuencia de individuos por estrato, segmentado por el grado de formalidad laboral
@@ -42,3 +45,8 @@ Este repositorio almacena toda la información utilizada para la solución del p
     7. Predicción del perfil edad-ingreso por género
     8. Brecha salarial de género por edad
     9. Distribución de la edad de máximo ingreso por género (estimación por bootstrap)
+    10. RMSE de todas las especificaciones con K-fold y Validación
+    11. Distribución de los errores de predicción
+    12. Diagramas de caja de la distribución de los errores de predicción
+    13. RMSE de modelos 5 y 9 con LOOCV, K-fold y Validación
+    
