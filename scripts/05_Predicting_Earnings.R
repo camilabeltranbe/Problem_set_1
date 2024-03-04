@@ -104,7 +104,7 @@ score3a<- RMSE(predictions, testing$log_w )
 score3a 
 
 #Modelo 4 -> segundo modelo earnings gap con controles del punto 4  
-forma_4<- log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor  
+forma_4<- log_w ~ female + age + maxEducLevel_factor + hoursWorkUsual + oficio_factor + Jefe_h
 
 modelo4a <- lm(forma_4,
                data = training)
