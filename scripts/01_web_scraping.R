@@ -18,7 +18,7 @@ for (i in 1:length(url)){ #hace un loop para leer cada una de las url (data chun
   data <- rbind(data, tabla)
   }
 
-rm(list = (c("tabla","my_html","i","url","wd"))) #se borran los elementos que no quiero guardar
+rm(list = (c("tabla","my_html","i","url"))) #se borran los elementos que no quiero guardar
 
 #se establace la ruta para guardar los resultados
 setwd(paste0(wd,"/stores")) 
